@@ -1,0 +1,60 @@
+
+export interface Issue {
+  id: number;
+  repo: string;
+  icon: string;
+  title: string;
+  desc: string;
+  tags: string[];
+  karma: number;
+  difficulty: "High" | "Medium" | "Expert" | "Good First Issue";
+  posted: string;
+  language: string;
+  languageColor: string;
+  html_url: string;
+}
+
+export interface UserRepo {
+    name: string;
+    private: boolean;
+    stars: number;
+    updated: string;
+}
+
+export interface RepoIssue {
+    id: number;
+    title: string;
+    labels: { name: string, color: string }[];
+    number: number;
+    created_at: string;
+}
+
+export interface Transaction {
+    id: number;
+    type: 'earned' | 'spent';
+    description: string;
+    amount: number;
+    date: string;
+    repo?: string;
+}
+
+export interface MyRequest {
+    id: number;
+    title: string;
+    repo: string;
+    bounty: number;
+    status: 'open' | 'in_progress' | 'completed';
+    assignee?: string;
+    created_at: string;
+}
+
+export interface ContributedRepo {
+    name: string;
+    icon: string;
+    totalKarmaEarned: number;
+    prsMerged: number;
+    lastContributed: string;
+    description: string;
+}
+
+export type DashboardView = 'feed' | 'create' | 'history' | 'my-requests' | 'settings' | 'profile' | 'contributions' | 'search';
