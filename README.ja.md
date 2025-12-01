@@ -1,6 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-
 # Git Karma
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -72,47 +69,46 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 
 ## ディレクトリ構成
 
-- **`frontend/`**: ユーザーインターフェース用のNext.jsアプリケーション。
-- **`backend/`**: APIおよびビジネスロジック用のNext.jsアプリケーション。
-- **`.github/`**: GitHubテンプレートとワークフロー。
+- **`src/`**: Next.js App Router アプリケーション (フロントエンド & API)。
+- **`prisma/`**: データベーススキーマとマイグレーション。
+- **`public/`**: 静的アセット。
+
+## 前提条件
+
+- Node.js 18以上
+- Docker & Docker Compose (ローカルデータベース用)
 
 ## 開発 (ローカルでの実行)
 
-フロントエンドとバックエンドの両方のサーバーを起動する必要があります。
-
-### フロントエンド (UI)
-
-1. フロントエンドディレクトリに移動します:
+1. リポジトリをクローンし、依存関係をインストールします:
    ```bash
-   cd frontend
-   ```
-
-2. 依存関係をインストールします:
-   ```bash
+   git clone https://github.com/yamadarikuto/git-karma.git
+   cd git-karma
    npm install
    ```
 
-3. 開発サーバーを起動します (ポート 3000):
+2. 環境変数をセットアップします:
+   ```bash
+   cp .env.example .env
+   # 設定をカスタマイズしたい場合は .env を編集してください。Dockerを使用する場合はデフォルトのままで動作します。
+   ```
+
+3. データベースを起動します:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. データベースを初期化します:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. 開発サーバーを起動します:
    ```bash
    npm run dev
    ```
 
-### バックエンド (API)
-
-1. バックエンドディレクトリに移動します:
-   ```bash
-   cd backend
-   ```
-
-2. 依存関係をインストールします:
-   ```bash
-   npm install
-   ```
-
-3. 開発サーバーを起動します (ポート 3001):
-   ```bash
-   npm run dev -- -p 3001
-   ```
+   ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。
 
 ### バックエンド開発環境
 
@@ -124,6 +120,22 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
   - Lint (ESLint)
   - Type Check (TypeScript)
   - Tests (Vitest)
+
+## ドキュメント
+
+### プロジェクトドキュメント
+- **[システムアーキテクチャ](docs/ARCHITECTURE.md)**: 技術スタックと構造の概要。
+- **[データベーススキーマ](docs/DATABASE.md)**: ER図とモデルの詳細。
+- **[ロードマップ](docs/ROADMAP.ja.md)**: 今後の計画。
+- **[ブレインストーミング](docs/FEATURE_IDEA.ja.md)**: 野心的なアイデア集。
+- **[コーディング規約](docs/CODING_RULE.ja.md)**: 開発の標準と規約。
+- **[AIガイドライン](docs/AI_GUIDELINE.md)**: AIツールの使用に関するポリシー。
+- **[変更履歴](CHANGELOG.md)**: バージョン履歴。
+
+### コミュニティヘルス
+- **[セキュリティポリシー](.github/SECURITY.md)**: 脆弱性の報告について。
+- **[サポート](.github/SUPPORT.md)**: ヘルプの求め方。
+- **[行動規範](.github/CODE_OF_CONDUCT.md)**: コミュニティの基準。
 
 ## コントリビューション
 

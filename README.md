@@ -1,6 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-
 # Git Karma
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -37,47 +34,62 @@ Git Karma acts as a "Time Bank" for developers. It solves the problem of neglect
 
 ## Directory Structure
 
-- **`frontend/`**: Next.js application for the User Interface.
-- **`backend/`**: Next.js application for the API and Business Logic.
-- **`.github/`**: GitHub templates and workflows.
+- **`src/`**: Next.js App Router application (Frontend & API).
+- **`prisma/`**: Database schema and migrations.
+- **`public/`**: Static assets.
+
+## Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose (for local database)
 
 ## Development (Run Locally)
 
-You will need to run both the frontend and backend servers.
-
-### Frontend (UI)
-
-1. Navigate to the frontend directory:
+1. Clone the repository and install dependencies:
    ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
+   git clone https://github.com/yamadarikuto/git-karma.git
+   cd git-karma
    npm install
    ```
 
-3. Run the development server (Port 3000):
+2. Set up the environment:
+   ```bash
+   cp .env.example .env
+   # Edit .env if you want to customize settings, otherwise defaults work with Docker
+   ```
+
+3. Start the database:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Initialize the database:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. Run the development server:
    ```bash
    npm run dev
    ```
 
-### Backend (API)
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+## Documentation
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Project Documentation
+- **[System Architecture](docs/ARCHITECTURE.md)**: Overview of the tech stack and structure.
+- **[Database Schema](docs/DATABASE.md)**: ER diagram and model details.
+- **[Roadmap](docs/ROADMAP.md)**: Future plans.
+- **[Brainstorming](docs/FEATURE_IDEA.md)**: Wild ideas and moonshots.
+- **[Coding Rules](docs/CODING_RULE.md)**: Development standards and conventions.
+- **[AI Guidelines](docs/AI_GUIDELINE.md)**: Policy on using AI tools.
+- **[Changelog](CHANGELOG.md)**: Version history.
 
-3. Run the development server (Port 3001):
-   ```bash
-   npm run dev -- -p 3001
-   ```
+### Community Health
+- **[Security Policy](.github/SECURITY.md)**: Vulnerability reporting.
+- **[Support](.github/SUPPORT.md)**: Where to find help.
+- **[Code of Conduct](.github/CODE_OF_CONDUCT.md)**: Community standards.
 
 ## Contributing
 
