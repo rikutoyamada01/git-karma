@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { X, Book, Check, CircleDot, Zap, Loader, Plus, Filter, User } from 'lucide-react';
 import { MY_REPOS, MY_REPO_ISSUES, MOCK_MY_REQUESTS } from '../mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 export const CreateRequestView = ({ onPublish, onCancel }: { onPublish: (amount: number) => void, onCancel: () => void }) => {
     const [step, setStep] = useState(1);
@@ -38,7 +40,7 @@ export const CreateRequestView = ({ onPublish, onCancel }: { onPublish: (amount:
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${step >= 2 ? 'border-brand-accent bg-brand-accent/10' : 'border-brand-border'}`}>2</div>
                         <span>Issue</span>
                     </div>
-                     <div className="w-8 h-px bg-[#30363d] mx-2"></div>
+                    <div className="w-8 h-px bg-[#30363d] mx-2"></div>
                     <div className={`flex items-center gap-2 ${step >= 3 ? 'text-brand-accent' : 'text-brand-muted'}`}>
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${step >= 3 ? 'border-brand-accent bg-brand-accent/10' : 'border-brand-border'}`}>3</div>
                         <span>Bounty</span>
@@ -188,15 +190,18 @@ export const CreateRequestView = ({ onPublish, onCancel }: { onPublish: (amount:
 };
 
 export const MyRequestsView = () => {
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+
     return (
         <div className="bg-background border border-brand-border rounded-md overflow-hidden">
+             <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
              <div className="bg-brand-panel border-b border-brand-border p-3 flex items-center justify-between text-sm text-brand-text">
                  <div className="flex gap-4">
                      <span className="font-bold flex items-center gap-1"><CircleDot className="w-4 h-4 text-brand-text"/> 3 Open</span>
                      <span className="text-brand-muted flex items-center gap-1"><Check className="w-4 h-4"/> 1 Closed</span>
                  </div>
                  <div className="flex items-center gap-2">
-                     <button className="text-brand-muted hover:text-brand-accent"><Filter className="w-4 h-4" /></button>
+                     <button onClick={() => showNotImplemented('Filter')} className="text-brand-muted hover:text-brand-accent"><Filter className="w-4 h-4" /></button>
                  </div>
              </div>
              
@@ -211,7 +216,10 @@ export const MyRequestsView = () => {
                                     {req.status === 'completed' && <Check className="w-4 h-4 text-[#8957e5]" />}
                                  </div>
                                  <div>
-                                     <div className="text-brand-text font-semibold text-base group-hover:text-brand-accent cursor-pointer">
+                                     <div 
+                                        onClick={() => showNotImplemented('Request Details')}
+                                        className="text-brand-text font-semibold text-base group-hover:text-brand-accent cursor-pointer"
+                                     >
                                          {req.title}
                                      </div>
                                      <div className="text-xs text-brand-muted mt-1 flex items-center gap-2">
@@ -243,7 +251,7 @@ export const MyRequestsView = () => {
                  ))}
              </div>
              <div className="p-3 text-center border-t border-brand-border bg-brand-panel">
-                <button className="text-xs text-brand-accent hover:underline">View all requests</button>
+                <button onClick={() => showNotImplemented('View All Requests')} className="text-xs text-brand-accent hover:underline">View all requests</button>
             </div>
         </div>
     )

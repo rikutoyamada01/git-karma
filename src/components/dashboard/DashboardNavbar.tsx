@@ -1,10 +1,13 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, Zap, Plus, ChevronDown, Bell, Ghost, LogOut, Settings, User, X, Search, GitPullRequest, Inbox } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { DashboardView } from './types';
 import { RECENT_REPOS } from './mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 interface DashboardNavbarProps {
   onNavigate: (page: string) => void;
@@ -34,6 +37,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -60,6 +64,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
   return (
     <>
+      <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
       <header className="bg-brand-panel py-3 px-4 md:px-6 border-b border-brand-border flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4 w-full md:w-auto">
           <button 
@@ -94,11 +99,11 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           </div>
 
           <nav className="hidden md:flex items-center gap-1 text-sm font-bold text-brand-text ml-2">
-            <a href="#" className="px-2 hover:text-brand-accent">Pull requests</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Issues</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Codespaces</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Marketplace</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Explore</a>
+            <button onClick={() => showNotImplemented('Pull Requests')} className="px-2 hover:text-brand-accent">Pull requests</button>
+            <button onClick={() => showNotImplemented('Issues')} className="px-2 hover:text-brand-accent">Issues</button>
+            <button onClick={() => showNotImplemented('Codespaces')} className="px-2 hover:text-brand-accent">Codespaces</button>
+            <button onClick={() => showNotImplemented('Marketplace')} className="px-2 hover:text-brand-accent">Marketplace</button>
+            <button onClick={() => showNotImplemented('Explore')} className="px-2 hover:text-brand-accent">Explore</button>
           </nav>
         </div>
 
@@ -129,10 +134,16 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                     New Karma Request
                   </button>
                   <div className="border-t border-brand-border my-1"></div>
-                  <button className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white">
+                  <button 
+                    onClick={() => { showNotImplemented('New Repository'); setIsCreateMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
+                  >
                     New repository
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white">
+                  <button 
+                    onClick={() => { showNotImplemented('Import Repository'); setIsCreateMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
+                  >
                     Import repository
                   </button>
                 </div>
@@ -291,10 +302,10 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                
                {/* General Nav */}
                <nav className="space-y-2 text-sm font-medium text-brand-text">
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Pull requests</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Issues</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Codespaces</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Explore</a>
+                  <button onClick={() => showNotImplemented('Pull Requests')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Pull requests</button>
+                  <button onClick={() => showNotImplemented('Issues')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Issues</button>
+                  <button onClick={() => showNotImplemented('Codespaces')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Codespaces</button>
+                  <button onClick={() => showNotImplemented('Explore')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Explore</button>
                </nav>
 
                <div className="mt-8 pt-4 border-t border-brand-border">

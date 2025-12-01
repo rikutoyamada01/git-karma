@@ -2,10 +2,15 @@
 import React from 'react';
 import { Users, MapPin, Link as LinkIcon, Twitter, Book, Star, GitBranch, Zap, Award, Target } from 'lucide-react';
 import { RECENT_REPOS } from '../mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 export const ProfileView = () => {
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+
     return (
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start max-w-7xl mx-auto">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             {/* Left Sidebar - User Info */}
             <div className="w-full md:w-[296px] shrink-0 -mt-8 md:mt-0 relative z-10">
                 <div className="relative group">
@@ -14,7 +19,10 @@ export const ProfileView = () => {
                         alt="Avatar" 
                         className="w-[150px] h-[150px] md:w-[260px] md:h-[260px] rounded-full border border-brand-border shadow-xl"
                     />
-                    <div className="absolute bottom-4 right-4 bg-brand-panel border border-brand-border rounded-full p-2 hidden group-hover:block cursor-pointer">
+                    <div 
+                        onClick={() => showNotImplemented('Edit Avatar')}
+                        className="absolute bottom-4 right-4 bg-brand-panel border border-brand-border rounded-full p-2 hidden group-hover:block cursor-pointer"
+                    >
                         <span className="text-xs text-brand-text">Edit</span>
                     </div>
                 </div>
@@ -24,7 +32,10 @@ export const ProfileView = () => {
                     <div className="text-xl text-brand-muted font-light">guest_dev</div>
                 </div>
 
-                <button className="w-full bg-brand-panel border border-brand-border hover:bg-brand-border text-brand-text py-1.5 rounded-md text-sm font-medium mb-4 transition-colors">
+                <button 
+                    onClick={() => showNotImplemented('Edit Profile')}
+                    className="w-full bg-brand-panel border border-brand-border hover:bg-brand-border text-brand-text py-1.5 rounded-md text-sm font-medium mb-4 transition-colors"
+                >
                     Edit profile
                 </button>
 
@@ -70,9 +81,9 @@ export const ProfileView = () => {
                 <div className="space-y-2 text-sm text-brand-text mb-6">
                     <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-brand-muted" />
-                        <span className="font-bold hover:text-brand-accent cursor-pointer">1.2k</span> followers
+                        <span onClick={() => showNotImplemented('Followers')} className="font-bold hover:text-brand-accent cursor-pointer">1.2k</span> followers
                         <span>·</span>
-                        <span className="font-bold hover:text-brand-accent cursor-pointer">450</span> following
+                        <span onClick={() => showNotImplemented('Following')} className="font-bold hover:text-brand-accent cursor-pointer">450</span> following
                     </div>
                     <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-brand-muted" />
@@ -80,11 +91,11 @@ export const ProfileView = () => {
                     </div>
                     <div className="flex items-center gap-2">
                         <LinkIcon className="w-4 h-4 text-brand-muted" />
-                        <a href="#" className="hover:text-brand-accent hover:underline">gitkarma.dev</a>
+                        <span onClick={() => showNotImplemented('Website')} className="hover:text-brand-accent hover:underline cursor-pointer">gitkarma.dev</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Twitter className="w-4 h-4 text-brand-muted" />
-                        <a href="#" className="hover:text-brand-accent hover:underline">@gitkarma_jp</a>
+                        <span onClick={() => showNotImplemented('Twitter')} className="hover:text-brand-accent hover:underline cursor-pointer">@gitkarma_jp</span>
                     </div>
                 </div>
 
@@ -107,12 +118,18 @@ export const ProfileView = () => {
                              <Book className="w-4 h-4" />
                              Overview
                          </button>
-                         <button className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors">
+                         <button 
+                            onClick={() => showNotImplemented('Repositories Tab')}
+                            className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors"
+                         >
                              <Book className="w-4 h-4 text-brand-muted" />
                              Repositories
                              <span className="bg-[#30363d] text-brand-text rounded-full px-1.5 py-0.5 text-xs">12</span>
                          </button>
-                         <button className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors">
+                         <button 
+                            onClick={() => showNotImplemented('Stars Tab')}
+                            className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors"
+                         >
                              <Star className="w-4 h-4 text-brand-muted" />
                              Stars
                              <span className="bg-[#30363d] text-brand-text rounded-full px-1.5 py-0.5 text-xs">420</span>
@@ -124,7 +141,7 @@ export const ProfileView = () => {
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <h2 className="text-base font-normal text-brand-text">Popular Repositories</h2>
-                        <button className="text-xs text-brand-accent hover:underline">Customize your pins</button>
+                        <button onClick={() => showNotImplemented('Customize Pins')} className="text-xs text-brand-accent hover:underline">Customize your pins</button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -132,7 +149,7 @@ export const ProfileView = () => {
                              <div key={i} className="border border-brand-border rounded-md p-4 bg-background flex flex-col justify-between">
                                  <div>
                                      <div className="flex items-center justify-between mb-2">
-                                         <a href="#" className="font-bold text-brand-accent hover:underline text-sm truncate">{repo}</a>
+                                         <span onClick={() => showNotImplemented('Repository Details')} className="font-bold text-brand-accent hover:underline text-sm truncate cursor-pointer">{repo}</span>
                                          <span className="border border-brand-border rounded-full px-2 py-0.5 text-xs text-brand-muted font-medium">Public</span>
                                      </div>
                                      <p className="text-xs text-brand-muted mb-4 line-clamp-2">
@@ -144,11 +161,11 @@ export const ProfileView = () => {
                                          <span className="w-3 h-3 rounded-full bg-[#3178c6]"></span>
                                          TypeScript
                                      </div>
-                                     <div className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
+                                     <div onClick={() => showNotImplemented('Star Repository')} className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
                                          <Star className="w-4 h-4" />
                                          124
                                      </div>
-                                     <div className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
+                                     <div onClick={() => showNotImplemented('Fork Repository')} className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
                                          <GitBranch className="w-4 h-4" />
                                          12
                                      </div>
@@ -208,7 +225,7 @@ export const ProfileView = () => {
                                 </div>
                                 <div className="flex items-center justify-between mb-1">
                                     <h3 className="text-sm font-normal text-brand-text">
-                                        Created a pull request in <a href="#" className="font-bold text-brand-accent hover:underline">gitkarma/frontend</a>
+                                        Created a pull request in <span onClick={() => showNotImplemented('Repository Details')} className="font-bold text-brand-accent hover:underline cursor-pointer">gitkarma/frontend</span>
                                     </h3>
                                     <span className="text-xs text-brand-muted">2 days ago</span>
                                 </div>
@@ -223,14 +240,17 @@ export const ProfileView = () => {
                                 </div>
                                 <div className="flex items-center justify-between mb-1">
                                     <h3 className="text-sm font-normal text-brand-text">
-                                        Earned <span className="font-bold text-[#e3b341]">450 Karma</span> from <a href="#" className="font-bold text-brand-accent hover:underline">facebook/react</a>
+                                        Earned <span className="font-bold text-[#e3b341]">450 Karma</span> from <span onClick={() => showNotImplemented('Repository Details')} className="font-bold text-brand-accent hover:underline cursor-pointer">facebook/react</span>
                                     </h3>
                                     <span className="text-xs text-brand-muted">5 days ago</span>
                                 </div>
                             </div>
                             
                             <div className="relative">
-                                <button className="w-full py-2 border border-brand-border rounded-md text-xs font-bold text-brand-accent hover:bg-brand-panel hover:underline transition-colors">
+                                <button 
+                                    onClick={() => showNotImplemented('Show More Activity')}
+                                    className="w-full py-2 border border-brand-border rounded-md text-xs font-bold text-brand-accent hover:bg-brand-panel hover:underline transition-colors"
+                                >
                                     Show more activity
                                 </button>
                             </div>

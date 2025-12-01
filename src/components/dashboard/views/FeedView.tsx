@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { RefreshCw, GitPullRequest, CircleDot, Zap, Filter, ExternalLink, X, Check } from 'lucide-react';
 import { Issue } from '../types';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 export const SparklesIcon = () => (
     <svg className="w-4 h-4 text-[#e3b341]" fill="currentColor" viewBox="0 0 24 24">
@@ -127,19 +129,22 @@ export const FeedView = ({
     onPass: () => void,
     onAccept: () => void
 }) => {
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+
     if (activeIssue) {
         return <ActiveMissionCard issue={activeIssue} onAbandon={onAbandon} />;
     }
 
     return (
         <div className="bg-background border border-brand-border rounded-md overflow-hidden relative min-h-[500px] flex flex-col">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <SparklesIcon />
                     <span className="font-bold text-brand-text">Suggested for you</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="text-brand-muted hover:text-brand-accent"><Filter className="w-4 h-4" /></button>
+                    <button onClick={() => showNotImplemented('Filter')} className="text-brand-muted hover:text-brand-accent"><Filter className="w-4 h-4" /></button>
                 </div>
             </div>
 
@@ -154,7 +159,10 @@ export const FeedView = ({
                         <div className="flex items-center gap-4">
                             <img src={currentIssue.icon} alt="" className="w-12 h-12 rounded-md border border-brand-border" />
                             <div>
-                                <h3 className="text-lg font-bold text-brand-text hover:text-brand-accent cursor-pointer flex items-center gap-2">
+                                <h3 
+                                    onClick={() => showNotImplemented('Repository Details')}
+                                    className="text-lg font-bold text-brand-text hover:text-brand-accent cursor-pointer flex items-center gap-2"
+                                >
                                     {currentIssue.repo}
                                     <ExternalLink className="w-3 h-3 text-brand-muted" />
                                 </h3>

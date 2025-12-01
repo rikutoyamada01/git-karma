@@ -5,12 +5,15 @@ import { Github, Menu, X } from 'lucide-react';
 
 import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +45,7 @@ const Navbar: React.FC = () => {
           : 'bg-transparent border-transparent'
       }`}
     >
+      <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           

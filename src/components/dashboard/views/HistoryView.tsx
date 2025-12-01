@@ -2,13 +2,18 @@
 import React from 'react';
 import { ExternalLink, ArrowDownLeft, ArrowUpRight, Zap } from 'lucide-react';
 import { MOCK_TRANSACTIONS } from '../mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 export const TransactionHistoryView = () => {
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+
     return (
         <div className="bg-background border border-brand-border rounded-md overflow-hidden">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center justify-between">
                 <h3 className="font-bold text-brand-text">Transaction History</h3>
-                <button className="text-xs text-brand-accent hover:underline flex items-center gap-1">
+                <button onClick={() => showNotImplemented('Export CSV')} className="text-xs text-brand-accent hover:underline flex items-center gap-1">
                     <ExternalLink className="w-3 h-3" />
                     Export CSV
                 </button>
@@ -49,7 +54,7 @@ export const TransactionHistoryView = () => {
             </div>
             
             <div className="p-3 text-center border-t border-brand-border bg-brand-panel">
-                <button className="text-xs text-brand-accent hover:underline">View older transactions</button>
+                <button onClick={() => showNotImplemented('View Older Transactions')} className="text-xs text-brand-accent hover:underline">View older transactions</button>
             </div>
         </div>
     );
