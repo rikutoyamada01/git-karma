@@ -4,6 +4,7 @@ import { RefreshCw, GitPullRequest, CircleDot, Zap, Filter, ExternalLink, X, Che
 import { Issue } from '../types';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 export const SparklesIcon = () => (
     <svg className="w-4 h-4 text-[#e3b341]" fill="currentColor" viewBox="0 0 24 24">
@@ -45,7 +46,7 @@ export const ActiveMissionCard = ({ issue, onAbandon }: { issue: Issue, onAbando
 
              <div className="p-6">
                 <div className="flex items-start gap-4 mb-6">
-                    <img src={issue.icon} alt="" className="w-12 h-12 rounded-md border border-brand-border" />
+                    <Image src={issue.icon} alt="" width={48} height={48} className="rounded-md border border-brand-border" />
                     <div>
                         <h3 className="text-lg font-bold text-brand-text mb-1 leading-snug">{issue.title}</h3>
                         <div className="text-sm text-brand-muted flex items-center gap-2">
@@ -157,7 +158,7 @@ export const FeedView = ({
                 <div className="w-full bg-brand-panel border border-brand-border rounded-xl p-6 shadow-2xl relative">
                     <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center gap-4">
-                            <img src={currentIssue.icon} alt="" className="w-12 h-12 rounded-md border border-brand-border" />
+                            <Image src={currentIssue.icon} alt="" width={48} height={48} className="rounded-md border border-brand-border" />
                             <div>
                                 <h3 
                                     onClick={() => showNotImplemented('Repository Details')}

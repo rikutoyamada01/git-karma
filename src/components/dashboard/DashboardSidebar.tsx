@@ -3,6 +3,7 @@ import { Zap, Clock, Book, Star, GitPullRequest } from 'lucide-react';
 import { RECENT_REPOS } from './mockData';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 const UserStatsCard = ({ karma, onHistoryClick }: { karma: number, onHistoryClick: () => void }) => {
   const level = Math.floor(karma / 1000) + 1;
@@ -89,13 +90,12 @@ export const LeftSidebar = ({ karma, onHistoryClick }: { karma: number, onHistor
           {RECENT_REPOS.map((repo, i) => (
             <li key={i} className="flex items-center gap-2 text-sm text-brand-text hover:underline cursor-pointer py-1">
               <div className="w-4 h-4 rounded-full bg-[#30363d] flex items-center justify-center shrink-0">
-                 <img 
+                 <Image 
                    src={`https://github.com/${repo.split('/')[0]}.png`} 
-                   className="w-4 h-4 rounded-full opacity-80"
+                   width={16}
+                   height={16}
+                   className="rounded-full opacity-80"
                    alt=""
-                   onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                   }}
                  />
                  <Book className="w-3 h-3 text-brand-muted absolute" style={{zIndex: -1}} />
               </div>

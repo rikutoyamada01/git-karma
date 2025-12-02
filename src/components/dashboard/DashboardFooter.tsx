@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 interface DashboardFooterProps {
   onNavigate: (page: string) => void;
@@ -21,7 +22,7 @@ export const DashboardFooter: React.FC<DashboardFooterProps> = () => {
                className="cursor-pointer hover:text-brand-text transition-colors p-1 rounded-full hover:bg-brand-panel" 
                title="Go to Home"
             >
-               <img src="/icon.png" alt="GitKarma Logo" className="w-6 h-6 object-contain" />
+               <Image src="/icon.png" alt="GitKarma Logo" width={24} height={24} className="object-contain" />
             </Link>
             <span>&copy; {new Date().getFullYear()} GitKarma Project.</span>
           </div>

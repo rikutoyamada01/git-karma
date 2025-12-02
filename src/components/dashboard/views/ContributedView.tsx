@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { GitPullRequest, Zap, ArrowRight, Star, Clock, ChevronLeft, Search, Filter, ExternalLink } from 'lucide-react';
 import { CONTRIBUTED_REPOS, AVAILABLE_CONTRIBUTION_ISSUES } from '../mockData';
 import { ContributedRepo, Issue } from '../types';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 interface ContributedViewProps {
     onAcceptIssue: (issue: Issue) => void;
@@ -28,7 +28,7 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <img src={selectedRepo.icon} alt="" className="w-8 h-8 rounded-md border border-brand-border" />
+                    <Image src={selectedRepo.icon} alt="" width={32} height={32} className="rounded-md border border-brand-border" />
                     <div>
                         <h3 className="font-bold text-brand-text leading-tight">{selectedRepo.name}</h3>
                         <p className="text-xs text-brand-muted">Select a new task to continue your contribution streak</p>
@@ -118,7 +118,7 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
             <div className="divide-y divide-[#30363d]">
                 {CONTRIBUTED_REPOS.map((repo, idx) => (
                     <div key={idx} className="p-4 flex items-center gap-4 hover:bg-brand-panel transition-colors">
-                        <img src={repo.icon} alt="" className="w-10 h-10 rounded-md border border-brand-border" />
+                        <Image src={repo.icon} alt="" width={40} height={40} className="rounded-md border border-brand-border" />
                         
                         <div className="flex-1 min-w-0">
                             <h4 

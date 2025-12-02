@@ -1,5 +1,6 @@
 import { signIn } from "@/lib/auth"
 import { Github } from "lucide-react"
+import Image from "next/image"
 
 export default function LoginPage() {
   return (
@@ -7,7 +8,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8 rounded-lg border border-brand-border bg-brand-panel p-10 shadow-lg">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-             <img src="/icon.png" alt="GitKarma Logo" className="w-12 h-12 object-contain" />
+             <Image src="/icon.png" alt="GitKarma Logo" width={48} height={48} className="object-contain" />
           </div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             Sign in to GitKarma

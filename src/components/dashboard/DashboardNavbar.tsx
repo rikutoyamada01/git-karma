@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, Zap, Plus, ChevronDown, Bell, Ghost, LogOut, Settings, User, X, Search, GitPullRequest, Inbox } from 'lucide-react';
@@ -8,6 +6,7 @@ import { DashboardView } from './types';
 import { RECENT_REPOS } from './mockData';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 interface DashboardNavbarProps {
   onNavigate: (page: string) => void;
@@ -78,7 +77,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="w-8 h-8 flex items-center justify-center">
-              <img src="/icon.png" alt="GitKarma Logo" className="w-full h-full object-contain" />
+              <Image src="/icon.png" alt="GitKarma Logo" width={32} height={32} className="object-contain" />
             </div>
             <span className="font-bold text-brand-text text-sm hidden md:block group-hover:text-brand-accent">GitKarma</span>
           </Link>
@@ -223,7 +222,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             <div className="p-4 border-b border-brand-border flex items-center justify-between">
                <div className="flex items-center gap-2">
                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src="/icon.png" alt="GitKarma Logo" className="w-full h-full object-contain" />
+                    <Image src="/icon.png" alt="GitKarma Logo" width={32} height={32} className="object-contain" />
                  </div>
                  <span className="font-bold text-white text-sm">GitKarma</span>
                </div>
@@ -290,7 +289,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                    {RECENT_REPOS.slice(0, 5).map((repo, i) => (
                       <div key={i} className="flex items-center gap-2 px-2 py-2 rounded-md text-sm font-medium text-brand-text hover:bg-[#21262d] cursor-pointer">
                         <div className="w-4 h-4 rounded-full bg-[#30363d] flex items-center justify-center shrink-0 overflow-hidden">
-                           <img src={`https://github.com/${repo.split('/')[0]}.png`} className="w-full h-full object-cover opacity-80" alt="" />
+                           <Image src={`https://github.com/${repo.split('/')[0]}.png`} width={16} height={16} className="object-cover opacity-80" alt="" />
                         </div>
                         <span className="truncate">{repo}</span>
                       </div>

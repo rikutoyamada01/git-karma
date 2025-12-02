@@ -3,6 +3,7 @@
 import React from 'react';
 import { Twitter, Github, Heart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
@@ -16,7 +17,7 @@ const Footer: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
                 <div className="col-span-1 sm:col-span-2 lg:col-span-1">
                     <Link href="/" className="flex items-center gap-2 mb-4 cursor-pointer">
-                        <img src="/icon.png" alt="GitKarma Logo" className="w-6 h-6 object-contain" />
+                        <Image src="/icon.png" alt="GitKarma Logo" width={24} height={24} className="object-contain" />
                         <span className="font-bold text-foreground text-xl">GitKarma</span>
                     </Link>
                     <p className="text-sm text-brand-muted leading-relaxed">

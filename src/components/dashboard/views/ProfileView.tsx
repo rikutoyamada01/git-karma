@@ -4,6 +4,7 @@ import { Users, MapPin, Link as LinkIcon, Twitter, Book, Star, GitBranch, Zap, A
 import { RECENT_REPOS } from '../mockData';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 export const ProfileView = () => {
     const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
@@ -14,9 +15,11 @@ export const ProfileView = () => {
             {/* Left Sidebar - User Info */}
             <div className="w-full md:w-[296px] shrink-0 -mt-8 md:mt-0 relative z-10">
                 <div className="relative group">
-                    <img 
+                    <Image 
                         src="https://ui-avatars.com/api/?name=Guest+User&background=random&size=300" 
                         alt="Avatar" 
+                        width={260}
+                        height={260}
                         className="w-[150px] h-[150px] md:w-[260px] md:h-[260px] rounded-full border border-brand-border shadow-xl"
                     />
                     <div 
@@ -102,9 +105,9 @@ export const ProfileView = () => {
                 <div className="border-t border-brand-border pt-4">
                     <h2 className="text-base font-bold text-brand-text mb-3">Badges</h2>
                     <div className="flex flex-wrap gap-2">
-                         <img src="https://github.githubassets.com/images/modules/profile/achievements/pull-shark-default.png" className="w-16 h-16" title="Pull Shark" alt="Pull Shark Badge" />
-                         <img src="https://github.githubassets.com/images/modules/profile/achievements/yolo-default.png" className="w-16 h-16" title="YOLO" alt="YOLO Badge" />
-                         <img src="https://github.githubassets.com/images/modules/profile/achievements/quickdraw-default.png" className="w-16 h-16" title="Quickdraw" alt="Quickdraw Badge" />
+                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/pull-shark-default.png" width={64} height={64} className="w-16 h-16" title="Pull Shark" alt="Pull Shark Badge" />
+                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/yolo-default.png" width={64} height={64} className="w-16 h-16" title="YOLO" alt="YOLO Badge" />
+                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/quickdraw-default.png" width={64} height={64} className="w-16 h-16" title="Quickdraw" alt="Quickdraw Badge" />
                     </div>
                 </div>
             </div>

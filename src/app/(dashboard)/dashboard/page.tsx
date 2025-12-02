@@ -47,7 +47,8 @@ const Dashboard: React.FC = () => {
 
   const handleNavigate = (page: string) => {
       if (page === 'home') {
-          router.push('/');
+          // Trigger NextAuth sign out
+          window.location.href = '/api/auth/signout';
       } else if (page === 'docs') {
           router.push('/docs');
       } else if (page === 'guidelines') {
