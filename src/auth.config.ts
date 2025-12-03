@@ -22,6 +22,25 @@ export const authConfig = {
       }
       return true
     },
+    async jwt({ token, user, profile }) {
+      if (user) {
+        token.id = user.id
+        token.karma = user.karma ?? 0
+
+        if (profile && 'login' in profile && typeof profile.login === 'string') {
+          token.username = profile.login
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id
+        session.user.karma = token.karma ?? 0
+        session.user.username = token.username
+      }
+      return session
+    },
   },
-  providers: [GitHub], // Add providers with an empty array for now
+  providers: [GitHub],
 } satisfies NextAuthConfig
