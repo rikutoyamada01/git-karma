@@ -1,15 +1,26 @@
 import { signIn } from "@/lib/auth"
-import { Github } from "lucide-react"
+import { Github, ArrowLeft } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="w-full max-w-md space-y-8 rounded-lg border border-brand-border bg-brand-panel p-10 shadow-lg">
-        <div className="text-center">
-          <div className="flex justify-center mb-6">
-             <Image src="/icon.png" alt="GitKarma Logo" width={48} height={48} className="object-contain" />
+        <div className="flex items-center justify-between mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs text-brand-muted hover:text-brand-text transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to home
+          </Link>
+          <div className="flex items-center gap-2">
+            <Image src="/icon.png" alt="GitKarma Logo" width={32} height={32} className="object-contain" />
+            <span className="text-sm font-semibold text-brand-text hidden sm:inline">GitKarma</span>
           </div>
+        </div>
+        <div className="text-center mt-2">
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             Sign in to GitKarma
           </h2>
