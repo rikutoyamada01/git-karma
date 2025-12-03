@@ -7,6 +7,7 @@ import { RECENT_REPOS } from './mockData';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 interface DashboardNavbarProps {
   onNavigate: (page: string) => void;
@@ -37,6 +38,15 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+  const { data: session } = useSession();
+  const user = session?.user as
+    | ({ name?: string | null; image?: string | null; username?: string | null })
+    | undefined;
+
+  const userName = user?.name ?? user?.username ?? 'Guest';
+  const userImage =
+    user?.image ||
+    (user?.username ? `https://github.com/${user.username}.png` : undefined);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -165,7 +175,17 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             >
               <div className="w-5 h-5 rounded-full bg-[#30363d] flex items-center justify-center border border-brand-border overflow-hidden">
-                <Ghost className="w-3 h-3 text-brand-muted" />
+                {userImage ? (
+                  <Image
+                    src={userImage}
+                    alt={userName}
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 object-cover"
+                  />
+                ) : (
+                  <Ghost className="w-3 h-3 text-brand-muted" />
+                )}
               </div>
               <ChevronDown className="w-3 h-3 text-brand-text" />
             </button>
@@ -175,7 +195,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                 <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)}></div>
                 <div className="absolute right-0 top-full mt-2 w-48 bg-brand-panel border border-brand-border rounded-md shadow-xl z-20 py-1">
                   <div className="px-4 py-2 text-xs text-brand-muted">
-                    Signed in as <strong className="text-brand-text">Guest</strong>
+                    Signed in as <strong className="text-brand-text">{userName}</strong>
                   </div>
                   <div className="border-t border-brand-border my-1"></div>
                   <button 

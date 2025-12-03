@@ -1,54 +1,193 @@
 
-import React from 'react';
-import { Users, MapPin, Link as LinkIcon, Twitter, Book, Star, GitBranch, Zap, Award, Target } from 'lucide-react';
-import { RECENT_REPOS } from '../mockData';
+import React, { useEffect, useState } from 'react';
+import { GitBranch, Zap, Target } from 'lucide-react';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+
+export type UserProfileData = {
+  id: string;
+  name: string | null;
+  username: string | null;
+  image: string | null;
+  karma: number;
+  _count?: {
+    transactionsSent: number;
+    transactionsReceived: number;
+  };
+};
 import Image from 'next/image';
 
-export const ProfileView = () => {
+type ProfileViewProps = {
+    initialUser?: UserProfileData | null;
+    editable?: boolean;
+};
+
+export const ProfileView: React.FC<ProfileViewProps> = ({
+    initialUser = null,
+    editable = true,
+}) => {
     const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+    const [user, setUser] = useState<UserProfileData | null>(initialUser);
+    const [loading, setLoading] = useState(!initialUser);
+    const [error, setError] = useState<string | null>(null);
+
+    const [name, setName] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (initialUser) {
+            return;
+        }
+        const fetchUser = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch('/api/users', { cache: 'no-store' });
+                if (!res.ok) {
+                    throw new Error(`Failed to load profile (${res.status})`);
+                }
+                const data = (await res.json()) as UserProfileData;
+                setUser(data);
+                setName(data.name ?? '');
+                setImageUrl(data.image ?? '');
+            } catch (e) {
+                console.error('[ProfileView] failed to fetch user', e);
+                setError('プロフィール情報の取得に失敗しました。時間をおいて再度お試しください。');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, [initialUser]);
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editable) return;
+        setSaving(true);
+        setSaveMessage(null);
+        setError(null);
+
+        try {
+            const res = await fetch('/api/users', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name.trim() || undefined,
+                    image: imageUrl.trim(),
+                }),
+            });
+
+            const body = await res.json();
+
+            if (!res.ok) {
+                if (body?.error === 'Username is already taken') {
+                    setError('このユーザー名は既に使用されています。別の名前を試してください。');
+                } else if (body?.issues) {
+                    setError('入力内容に誤りがあります。');
+                } else {
+                    setError('プロフィールの保存に失敗しました。');
+                }
+                return;
+            }
+
+            setUser(body as UserProfileData);
+            setSaveMessage('プロフィールを保存しました。');
+        } catch (e) {
+            console.error('[ProfileView] failed to save profile', e);
+            setError('プロフィールの保存に失敗しました。');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const avatarSrc =
+        imageUrl ||
+        user?.image ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || user?.username || 'Guest User')}&background=random&size=300`;
 
     return (
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start max-w-7xl mx-auto">
             <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
-            {/* Left Sidebar - User Info */}
+            {/* Left Sidebar - User Info & GitKarma Stats */}
             <div className="w-full md:w-[296px] shrink-0 -mt-8 md:mt-0 relative z-10">
                 <div className="relative group">
                     <Image 
-                        src="https://ui-avatars.com/api/?name=Guest+User&background=random&size=300" 
+                        src={avatarSrc}
                         alt="Avatar" 
                         width={260}
                         height={260}
-                        className="w-[150px] h-[150px] md:w-[260px] md:h-[260px] rounded-full border border-brand-border shadow-xl"
+                        className="w-[150px] h-[150px] md:w-[260px] md:h-[260px] rounded-full border border-brand-border shadow-xl object-cover"
                     />
-                    <div 
-                        onClick={() => showNotImplemented('Edit Avatar')}
-                        className="absolute bottom-4 right-4 bg-brand-panel border border-brand-border rounded-full p-2 hidden group-hover:block cursor-pointer"
-                    >
-                        <span className="text-xs text-brand-text">Edit</span>
-                    </div>
                 </div>
 
                 <div className="pt-4 pb-4">
-                    <h1 className="text-2xl font-bold text-brand-text leading-tight">Guest User</h1>
-                    <div className="text-xl text-brand-muted font-light">guest_dev</div>
+                    <h1 className="text-2xl font-bold text-brand-text leading-tight">
+                        {loading ? 'Loading...' : user?.name || 'Unnamed User'}
+                    </h1>
+                    <div className="text-xl text-brand-muted font-light">
+                        {user?.username || 'no-username'}
+                    </div>
                 </div>
 
-                <button 
-                    onClick={() => showNotImplemented('Edit Profile')}
-                    className="w-full bg-brand-panel border border-brand-border hover:bg-brand-border text-brand-text py-1.5 rounded-md text-sm font-medium mb-4 transition-colors"
-                >
-                    Edit profile
-                </button>
+                {error && (
+                    <div className="mb-3 text-xs text-red-400 bg-red-950/40 border border-red-900 rounded px-2 py-1">
+                        {error}
+                    </div>
+                )}
+                {saveMessage && (
+                    <div className="mb-3 text-xs text-emerald-300 bg-emerald-900/30 border border-emerald-700 rounded px-2 py-1">
+                        {saveMessage}
+                    </div>
+                )}
 
-                {/* GitKarma Specific Stats */}
+                <form onSubmit={handleSave} className="space-y-3 mb-4">
+                    <div className="space-y-1">
+                        <label className="block text-xs font-medium text-brand-muted">Display name</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full bg-background border border-brand-border rounded-md px-3 py-1.5 text-sm text-brand-text focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff] focus:outline-none"
+                            placeholder="Your name"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="block text-xs font-medium text-brand-muted">GitHub Username</label>
+                        <div className="w-full bg-background border border-dashed border-brand-border rounded-md px-3 py-1.5 text-sm text-brand-muted">
+                            {user?.username || 'GitHub 連携後に表示されます'}
+                        </div>
+                        <p className="text-[11px] text-brand-muted">
+                            GitHub 側のプロフィールを更新すると、次回ログイン時に自動で同期されます。
+                        </p>
+                    </div>
+                    <div className="space-y-1">
+                        <label className="block text-xs font-medium text-brand-muted">Avatar URL (optional)</label>
+                        <input
+                            type="url"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            className="w-full bg-background border border-brand-border rounded-md px-3 py-1.5 text-sm text-brand-text focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff] focus:outline-none"
+                            placeholder="https://..."
+                        />
+                    </div>
+                    <button 
+                        type="submit"
+                        disabled={saving || loading}
+                        className="w-full bg-brand-panel border border-brand-border hover:bg-brand-border disabled:opacity-60 disabled:cursor-not-allowed text-brand-text py-1.5 rounded-md text-sm font-medium transition-colors"
+                    >
+                        {saving ? 'Saving...' : 'Save profile'}
+                    </button>
+                </form>
+
                 <div className="mb-6 bg-background border border-brand-border rounded-lg p-4 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
                     <h3 className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-3">GitKarma Stats</h3>
                     
                     <div className="flex items-center gap-3 mb-4">
                          <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                             12
+                             {(user?.karma ?? 0).toString().slice(0, 2)}
                          </div>
                          <div>
                              <div className="text-sm font-bold text-brand-text">Level 12</div>
@@ -62,124 +201,36 @@ export const ProfileView = () => {
                                  <Zap className="w-4 h-4 text-[#e3b341]" />
                                  Total Karma
                              </div>
-                             <span className="font-mono font-bold">15,400</span>
+                             <span className="font-mono font-bold">{user?.karma ?? 0}</span>
                         </div>
                          <div className="flex items-center justify-between text-sm">
                              <div className="flex items-center gap-2 text-brand-text">
                                  <Target className="w-4 h-4 text-brand-success" />
-                                 Mission Completion
+                                 Karma Sent
                              </div>
-                             <span className="font-mono font-bold">98.5%</span>
+                             <span className="font-mono font-bold">
+                                {user?._count?.transactionsSent ?? 0}
+                             </span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
-                             <div className="flex items-center gap-2 text-brand-text">
-                                 <Award className="w-4 h-4 text-[#a855f7]" />
-                                 Global Rank
-                             </div>
-                             <span className="font-mono font-bold">Top 5%</span>
+                            <div className="flex items-center gap-2 text-brand-text">
+                                <GitBranch className="w-4 h-4 text-[#a855f7]" />
+                                Karma Received
+                            </div>
+                            <span className="font-mono font-bold">
+                                {user?._count?.transactionsReceived ?? 0}
+                            </span>
                         </div>
-                    </div>
-                </div>
-
-                <div className="space-y-2 text-sm text-brand-text mb-6">
-                    <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-brand-muted" />
-                        <span onClick={() => showNotImplemented('Followers')} className="font-bold hover:text-brand-accent cursor-pointer">1.2k</span> followers
-                        <span>·</span>
-                        <span onClick={() => showNotImplemented('Following')} className="font-bold hover:text-brand-accent cursor-pointer">450</span> following
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-brand-muted" />
-                        Tokyo, Japan
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <LinkIcon className="w-4 h-4 text-brand-muted" />
-                        <span onClick={() => showNotImplemented('Website')} className="hover:text-brand-accent hover:underline cursor-pointer">gitkarma.dev</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Twitter className="w-4 h-4 text-brand-muted" />
-                        <span onClick={() => showNotImplemented('Twitter')} className="hover:text-brand-accent hover:underline cursor-pointer">@gitkarma_jp</span>
-                    </div>
-                </div>
-
-                <div className="border-t border-brand-border pt-4">
-                    <h2 className="text-base font-bold text-brand-text mb-3">Badges</h2>
-                    <div className="flex flex-wrap gap-2">
-                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/pull-shark-default.png" width={64} height={64} className="w-16 h-16" title="Pull Shark" alt="Pull Shark Badge" />
-                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/yolo-default.png" width={64} height={64} className="w-16 h-16" title="YOLO" alt="YOLO Badge" />
-                         <Image src="https://github.githubassets.com/images/modules/profile/achievements/quickdraw-default.png" width={64} height={64} className="w-16 h-16" title="Quickdraw" alt="Quickdraw Badge" />
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
-                {/* Profile Tabs */}
-                <div className="border-b border-brand-border mb-4 overflow-x-auto">
-                    <nav className="flex gap-4" aria-label="Tabs">
-                         <button className="border-b-2 border-brand-accent py-2 px-1 text-sm font-semibold text-brand-text flex items-center gap-2 whitespace-nowrap">
-                             <Book className="w-4 h-4" />
-                             Overview
-                         </button>
-                         <button 
-                            onClick={() => showNotImplemented('Repositories Tab')}
-                            className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors"
-                         >
-                             <Book className="w-4 h-4 text-brand-muted" />
-                             Repositories
-                             <span className="bg-[#30363d] text-brand-text rounded-full px-1.5 py-0.5 text-xs">12</span>
-                         </button>
-                         <button 
-                            onClick={() => showNotImplemented('Stars Tab')}
-                            className="border-b-2 border-transparent hover:border-[#8b949e] py-2 px-1 text-sm text-brand-text flex items-center gap-2 whitespace-nowrap transition-colors"
-                         >
-                             <Star className="w-4 h-4 text-brand-muted" />
-                             Stars
-                             <span className="bg-[#30363d] text-brand-text rounded-full px-1.5 py-0.5 text-xs">420</span>
-                         </button>
-                    </nav>
-                </div>
-
-                {/* Overview Section */}
                 <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-base font-normal text-brand-text">Popular Repositories</h2>
-                        <button onClick={() => showNotImplemented('Customize Pins')} className="text-xs text-brand-accent hover:underline">Customize your pins</button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                         {RECENT_REPOS.slice(0, 4).map((repo, i) => (
-                             <div key={i} className="border border-brand-border rounded-md p-4 bg-background flex flex-col justify-between">
-                                 <div>
-                                     <div className="flex items-center justify-between mb-2">
-                                         <span onClick={() => showNotImplemented('Repository Details')} className="font-bold text-brand-accent hover:underline text-sm truncate cursor-pointer">{repo}</span>
-                                         <span className="border border-brand-border rounded-full px-2 py-0.5 text-xs text-brand-muted font-medium">Public</span>
-                                     </div>
-                                     <p className="text-xs text-brand-muted mb-4 line-clamp-2">
-                                         A high-performance framework for building karma-driven applications.
-                                     </p>
-                                 </div>
-                                 <div className="flex items-center gap-4 text-xs text-brand-muted">
-                                     <div className="flex items-center gap-1">
-                                         <span className="w-3 h-3 rounded-full bg-[#3178c6]"></span>
-                                         TypeScript
-                                     </div>
-                                     <div onClick={() => showNotImplemented('Star Repository')} className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
-                                         <Star className="w-4 h-4" />
-                                         124
-                                     </div>
-                                     <div onClick={() => showNotImplemented('Fork Repository')} className="flex items-center gap-1 hover:text-brand-accent cursor-pointer">
-                                         <GitBranch className="w-4 h-4" />
-                                         12
-                                     </div>
-                                 </div>
-                             </div>
-                         ))}
-                    </div>
-
                     <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
-                             <h2 className="text-base font-normal text-brand-text">Contribution Activity</h2>
+                             <h2 className="text-base font-normal text-brand-text">Karma Activity (GitKarma)</h2>
                         </div>
                         <div className="border border-brand-border rounded-md p-4 bg-background overflow-hidden">
                              <div className="flex items-center justify-between mb-4">
