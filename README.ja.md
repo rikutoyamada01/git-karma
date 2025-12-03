@@ -30,21 +30,7 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 3. **カルマを獲得**: 貢献が検証されると、最初のカルマポイントを獲得できます。
 4. **プロジェクトを登録**: 獲得したカルマを使用して、自分のリポジトリをリストアップし、貢献者を募集します。
 
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 
-# Git Karma
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
-
-**Git Karma** は、オープンソースソフトウェアのための相互貢献プラットフォームです。開発者がスキルを「物々交換」できるようにすることで、OSS体験をゲーム化します。他者を助けることで「カルマ」を獲得し、そのカルマを使って自分のプロジェクトへの協力を得ることができます。
-
-> 「あなたのプロジェクトが進まないのは、あなたが誰かのプロジェクトを助けていないからだ。」
-
-[English README is here](README.md)
-
-</div>
 
 ## コンセプト
 
@@ -100,7 +86,7 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 
 4. データベースを初期化します:
    ```bash
-   npx prisma migrate dev
+   npm run migrate
    ```
 
 5. 開発サーバーを起動します:

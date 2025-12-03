@@ -1,6 +1,14 @@
 # Database Schema
 
 We use PostgreSQL as our primary database and Prisma as our ORM.
+To ensure stability in serverless environments (Vercel) and support migrations, we use a **Dynamic Connection Strategy**.
+
+## Connection Strategy
+
+*   **Runtime (`DATABASE_URL`)**: Uses the Transaction Pooler (e.g., Supabase port 6543) for high concurrency.
+*   **Migration (`DIRECT_URL`)**: Uses the Direct Connection (e.g., Supabase port 5432) for schema changes.
+
+This is handled automatically in `prisma.config.ts` and the `npm run migrate` script.
 
 ## ER Diagram
 

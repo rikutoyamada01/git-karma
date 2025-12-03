@@ -7,8 +7,8 @@ Git Karma is built as a monolithic Next.js application, leveraging the App Route
 - **Framework**: [Next.js 14+](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
-- **ORM**: [Prisma](https://www.prisma.io/)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/) (v5)
+- **ORM**: [Prisma](https://www.prisma.io/) (v7) - Uses dynamic connection switching for serverless compatibility.
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/) (v5) - Implemented via `src/proxy.ts` middleware.
 - **Styling**: Tailwind CSS (via `globals.css` and utility classes)
 - **Testing**: [Vitest](https://vitest.dev/)
 

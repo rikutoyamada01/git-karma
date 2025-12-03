@@ -41,3 +41,7 @@ Ensure your `.env` (local) and Vercel Environment Variables have both:
 
 *   `DATABASE_URL`: Connection string for Transaction Pooler (e.g., `postgres://...:6543/...`)
 *   `DIRECT_URL`: Connection string for Session/Direct connection (e.g., `postgres://...:5432/...`)
+
+> 💡 **Vercel Postgres shortcut**  
+> Vercel automatically injects `POSTGRES_PRISMA_URL`, `POSTGRES_URL`, and `POSTGRES_URL_NON_POOLING`.  
+> The runtime automatically falls back to those keys (and, as a last resort, `DIRECT_URL`) when `DATABASE_URL` is missing, but we still recommend defining `DATABASE_URL` explicitly so CLI tools and local scripts behave consistently.

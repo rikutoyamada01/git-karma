@@ -65,7 +65,7 @@ Git Karma acts as a "Time Bank" for developers. It solves the problem of neglect
 
 4. Initialize the database:
    ```bash
-   npx prisma migrate dev
+   npm run migrate
    ```
 
 5. Run the development server:

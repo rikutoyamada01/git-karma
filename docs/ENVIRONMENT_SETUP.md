@@ -43,10 +43,20 @@ GitHubログイン機能を使うには、GitHub上で「OAuth App」を作成�
 
 ```env
 # .env (Local)
-DATABASE_URL="postgresql://user:password@localhost:5432/gitkarma"
+# .env (Local)
+DATABASE_URL="postgresql://user:password@localhost:6543/gitkarma?pgbouncer=true" # Transaction Pooler
+DIRECT_URL="postgresql://user:password@localhost:5432/gitkarma" # Session/Direct
 AUTH_SECRET="local-generated-secret"
 AUTH_GITHUB_ID="local-app-client-id"
 AUTH_GITHUB_SECRET="local-app-client-secret"
+```
+
+### マイグレーションの実行
+マイグレーション（テーブル作成・変更）を行う際は、以下のコマンドを使用してください。
+`DIRECT_URL` を自動的に使用して実行されます。
+
+```bash
+npm run migrate
 ```
 
 ### 本番環境 (Vercel Variables)
