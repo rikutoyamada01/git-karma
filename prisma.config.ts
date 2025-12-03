@@ -8,6 +8,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts", // シードデータの作成
   },
   datasource: {
-    url: env("DIRECT_URL"),
+    // マイグレーション時は直接接続(DIRECT_URL)、それ以外(アプリ実行時)はプーリング接続(DATABASE_URL)を使用
+    url: process.env.PRISMA_MIGRATION === "true" ? env("DIRECT_URL") : env("DATABASE_URL"),
   },
 });
