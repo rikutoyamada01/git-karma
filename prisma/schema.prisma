@@ -21,6 +21,7 @@ model User {
   karma         Int             @default(0)
   transactionsSent Transaction[] @relation("SentTransactions")
   transactionsReceived Transaction[] @relation("ReceivedTransactions")
+  registeredRepositories Repository[] @relation("RegisteredRepositories")
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -68,6 +69,9 @@ model Repository {
   fullName    String
   url         String
   description String?
+
+  registeredById String
+  registeredBy   User     @relation("RegisteredRepositories", fields: [registeredById], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

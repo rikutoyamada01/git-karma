@@ -13,11 +13,38 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
+// Mock Next.js server module for next-auth
+vi.mock('next/server', () => {
+  const NextResponse = {
+    json: vi.fn((data, options) => ({
+      status: options?.status || 200,
+      headers: { 'Content-Type': 'application/json' },
+      json: () => Promise.resolve(data),
+    })),
+    redirect: vi.fn(),
+  };
+
+  class NextRequest {
+    body: BodyInit | null | undefined;
+    constructor(input?: RequestInfo | URL, init?: RequestInit) {
+      this.body = init?.body;
+    }
+    json() {
+      if (typeof this.body === 'string') {
+        return Promise.resolve(JSON.parse(this.body));
+      }
+      return Promise.resolve(null);
+    }
+  }
+
+  return { NextResponse, NextRequest };
+});
+
 // Mock NextAuth
 vi.mock('next-auth/react', () => ({
   useSession: vi.fn(() => ({
     data: null,
-    status: 'unauthenticated',
+    status: 'loading',
   })),
   signIn: vi.fn(),
   signOut: vi.fn(),

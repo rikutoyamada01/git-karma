@@ -22,7 +22,7 @@ export const authConfig = {
       }
       return true
     },
-    async jwt({ token, user, profile }) {
+    async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id
         token.karma = user.karma ?? 0
@@ -31,6 +31,9 @@ export const authConfig = {
           token.username = profile.login
         }
       }
+      if (account) {
+        token.accessToken = account.access_token
+      }
       return token
     },
     async session({ session, token }) {
@@ -38,6 +41,7 @@ export const authConfig = {
         session.user.id = token.id
         session.user.karma = token.karma ?? 0
         session.user.username = token.username
+        session.user.accessToken = token.accessToken
       }
       return session
     },
