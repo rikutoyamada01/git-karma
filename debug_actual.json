@@ -1,0 +1,46 @@
+[
+  {
+    "id": "repo1",
+    "githubId": 1,
+    "name": "repo-one",
+    "fullName": "testuser/test-repo",
+    "url": "https://github.com/testuser/test-repo",
+    "description": "A test repository",
+    "registeredById": "testUserId",
+    "createdAt": "2023-01-02T00:00:00.000Z",
+    "updatedAt": "2025-12-04T15:37:54.384Z",
+    "registeredBy": {
+      "id": "testUserId",
+      "name": "Test User",
+      "username": "testuser",
+      "email": "test@example.com",
+      "emailVerified": null,
+      "image": "https://example.com/avatar.png",
+      "karma": 0,
+      "createdAt": "2025-12-04T15:37:54.384Z",
+      "updatedAt": "2025-12-04T15:37:54.384Z"
+    }
+  },
+  {
+    "id": "repo2",
+    "githubId": 2,
+    "name": "repo-two",
+    "fullName": "testuser/test-repo",
+    "url": "https://github.com/testuser/test-repo",
+    "description": "A test repository",
+    "registeredById": "testUserId",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2025-12-04T15:37:54.384Z",
+    "registeredBy": {
+      "id": "testUserId",
+      "name": "Test User",
+      "username": "testuser",
+      "email": "test@example.com",
+      "emailVerified": null,
+      "image": "https://example.com/avatar.png",
+      "karma": 0,
+      "createdAt": "2025-12-04T15:37:54.384Z",
+      "updatedAt": "2025-12-04T15:37:54.384Z"
+    }
+  }
+]
