@@ -36,48 +36,24 @@ Git Karma acts as a "Time Bank" for developers. It solves the problem of neglect
 > *Note: While we start as a Web Platform, a CLI tool for terminal-based interaction is planned for the future.*
 
 ## Directory Structure
-
-- **`frontend/`**: Next.js application for the User Interface.
-- **`backend/`**: Next.js application for the API and Business Logic.
 - **`.github/`**: GitHub templates and workflows.
+- **`src/`**: Monolithic Next.js application containing both UI and API logic.
 
 ## Development (Run Locally)
 
-You will need to run both the frontend and backend servers.
+Git Karma is a monolithic Next.js application.
 
-### Frontend (UI)
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Run the development server (Port 3000):
+2. Run the development server (Port 3000):
    ```bash
    npm run dev
    ```
 
-### Backend (API)
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the development server (Port 3001):
-   ```bash
-   npm run dev -- -p 3001
-   ```
+**Note**: Before running, ensure you have set up your PostgreSQL database and environment variables as described in the [Deployment Guide](git-karma-deployment-guide.md).
 
 ## Contributing
 
