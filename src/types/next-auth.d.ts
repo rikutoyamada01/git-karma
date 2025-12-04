@@ -7,6 +7,7 @@ declare module 'next-auth' {
       id: string;
       karma?: number;
       username?: string;
+      accessToken?: string;
     } & DefaultSession['user'];
   }
 
@@ -22,5 +23,6 @@ declare module 'next-auth/jwt' {
     id: string;
     karma?: number;
     username?: string;
+    accessToken?: string; // Add this line
   }
 }

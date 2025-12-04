@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { ProfileView } from '@/components/dashboard/views/ProfileView'
 import type { UserProfileData } from '@/components/dashboard/views/ProfileView'
-import type { ImgHTMLAttributes } from 'react'
 
 describe('ProfileView', () => {
   it('loads and displays user profile data', async () => {

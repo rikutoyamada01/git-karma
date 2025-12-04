@@ -69,17 +69,33 @@ export const LeftSidebar = ({ karma, onHistoryClick }: { karma: number, onHistor
       <UserStatsCard karma={karma} onHistoryClick={onHistoryClick} />
 
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-semibold text-brand-text">Top Repositories</h2>
-          <button 
-            onClick={() => showNotImplemented('New Repository')}
-            className="bg-brand-success text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-success/80"
-          >
-            <Book className="w-3 h-3" />
-            New
-          </button>
-        </div>
-        <div className="relative mb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-sm font-semibold text-brand-text">Top Repositories</h2>
+                  <div className="flex gap-2"> {/* 新しい div でボタンを囲む */}
+                    <button
+                      onClick={() => showNotImplemented('Register Repository')}
+                      className="bg-brand-accent text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-accent/80"
+                    >
+                      <Book className="w-3 h-3" />
+                      Register
+                    </button>
+                    <button
+                      onClick={() => showNotImplemented('Browse Repositories')}
+                      className="bg-brand-info text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-info/80"
+                    >
+                      <GitPullRequest className="w-3 h-3" />
+                      Browse
+                    </button>
+                    {/* 既存の New ボタン */}
+                    <button
+                      onClick={() => showNotImplemented('New Repository')}
+                      className="bg-brand-success text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-success/80"
+                    >
+                      <Book className="w-3 h-3" />
+                      New
+                    </button>
+                  </div>
+                </div>        <div className="relative mb-3">
           <input 
             type="text" 
             placeholder="Find a repository..." 
