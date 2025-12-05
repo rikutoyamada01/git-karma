@@ -16,6 +16,7 @@ import { ContributedView } from '../../../components/dashboard/views/Contributed
 import { SearchView } from '../../../components/dashboard/views/SearchView';
 import { MOCK_ISSUES } from '../../../components/dashboard/mockData';
 import { Issue, DashboardView } from '../../../components/dashboard/types';
+import RegisterRepositoryView from '../../../components/dashboard/views/RegisterRepositoryView';
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
@@ -68,6 +69,8 @@ const Dashboard: React.FC = () => {
       switch (view) {
           case 'create':
               return <CreateRequestView onPublish={handlePublishRequest} onCancel={() => setView('feed')} />;
+          case 'register-repo':
+              return <RegisterRepositoryView onCancel={() => setView('feed')} />;
           case 'history':
               return <TransactionHistoryView />;
           case 'settings':
@@ -84,10 +87,8 @@ const Dashboard: React.FC = () => {
           default:
               return <FeedView 
                   activeIssue={activeIssue} 
-                  currentIssue={currentIssue}
                   onAbandon={() => setActiveIssue(null)}
                   onPass={handleNext}
-                  onAccept={() => handleAccept()}
               />;
       }
   };
@@ -108,7 +109,7 @@ const Dashboard: React.FC = () => {
       
       <main className="max-w-[1280px] mx-auto p-4 md:p-6 md:flex gap-6 w-full flex-1">
         {/* Left Sidebar - hidden on settings/profile page typically, but let's keep it for navigation consistency or hide it */}
-        {view !== 'settings' && view !== 'profile' && <LeftSidebar karma={karma} onHistoryClick={() => setView('history')} />}
+        {view !== 'settings' && view !== 'profile' && <LeftSidebar karma={karma} onHistoryClick={() => setView('history')} onViewChange={setView} />}
 
         <div className="flex-1 min-w-0">
              {/* Tab Navigation - Only show if not in Create/Profile/Settings mode */}

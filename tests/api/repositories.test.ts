@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { NextRequest } from "next/server"
 import { POST, GET } from "@/app/api/repositories/route"
@@ -12,6 +13,7 @@ vi.mock("@/lib/auth", () => ({
 }))
 
 // Mock prisma
+// Mock prisma
 vi.mock("@/lib/prisma", () => ({
   default: {
     repository: {
@@ -19,6 +21,14 @@ vi.mock("@/lib/prisma", () => ({
       create: vi.fn(),
       findMany: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    transaction: {
+      create: vi.fn(),
+    },
+    $transaction: vi.fn((callback) => callback(prisma)),
   },
 }))
 
@@ -89,6 +99,9 @@ describe("API /api/repositories", () => {
 
     it("should successfully register a new repository", async () => {
       vi.mocked(prisma.repository.findUnique).mockResolvedValue(null)
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: "testUserId", karma: 100 } as any)
+      vi.mocked(prisma.user.update).mockResolvedValue({ id: "testUserId", karma: 50 } as any)
+      vi.mocked(prisma.transaction.create).mockResolvedValue({ id: 1 } as any)
       
       const newRepo = mockPrismaRepository({
         id: "newRepoId",
@@ -165,10 +178,8 @@ describe("API /api/repositories", () => {
     it("should return 401 if user is not authenticated", async () => {
       vi.mocked(auth as unknown as () => Promise<Session | null>).mockResolvedValue(null)
 
-      const request = new NextRequest("http://localhost/api/repositories", {
-        method: "GET",
-      })
-      const response = await GET(request)
+
+      const response = await GET()
 
       expect(response.status).toBe(401)
       await expect(response.json()).resolves.toEqual({ message: "Unauthorized" })
@@ -194,10 +205,8 @@ describe("API /api/repositories", () => {
       
       vi.mocked(prisma.repository.findMany).mockResolvedValue(mockRepositories)
 
-      const request = new NextRequest("http://localhost/api/repositories", {
-        method: "GET",
-      })
-      const response = await GET(request)
+
+      const response = await GET()
 
       expect(response.status).toBe(200)
       await expect(response.json()).resolves.toEqual(
@@ -216,10 +225,8 @@ describe("API /api/repositories", () => {
     it("should return 500 on internal server error during fetching repositories", async () => {
       vi.mocked(prisma.repository.findMany).mockRejectedValue(new Error("Database error"))
 
-      const request = new NextRequest("http://localhost/api/repositories", {
-        method: "GET",
-      })
-      const response = await GET(request)
+
+      const response = await GET()
 
       expect(response.status).toBe(500)
       await expect(response.json()).resolves.toEqual({ message: "Internal server error" })

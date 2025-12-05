@@ -30,29 +30,66 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const newRepository = await prisma.repository.create({
-      data: {
-        githubId,
-        name,
-        fullName,
-        url,
-        description,
-        registeredBy: {
-          connect: {
-            id: session.user.id,
-          },
-        },
-      },
+    // Check user's Karma
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { karma: true },
     })
 
-    return NextResponse.json(newRepository, { status: 201 })
+    const REPOSITORY_REGISTRATION_COST = 50
+
+    if (!user || user.karma < REPOSITORY_REGISTRATION_COST) {
+      return NextResponse.json(
+        { message: `Insufficient Karma. You need ${REPOSITORY_REGISTRATION_COST} Karma to register a repository.` },
+        { status: 403 },
+      )
+    }
+
+    // Execute transaction: Deduct Karma, Create Transaction, Create Repository
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Deduct Karma
+      await tx.user.update({
+        where: { id: session.user.id },
+        data: { karma: { decrement: REPOSITORY_REGISTRATION_COST } },
+      })
+
+      // 2. Create Transaction Record
+      await tx.transaction.create({
+        data: {
+          amount: REPOSITORY_REGISTRATION_COST,
+          description: `Register repository: ${fullName}`,
+          fromUserId: session.user.id!,
+          toUserId: session.user.id!, // System consumption (self-payment for now)
+        },
+      })
+
+      // 3. Create Repository
+      const newRepository = await tx.repository.create({
+        data: {
+          githubId,
+          name,
+          fullName,
+          url,
+          description,
+          registeredBy: {
+            connect: {
+              id: session.user.id,
+            },
+          },
+        },
+      })
+
+      return newRepository
+    })
+
+    return NextResponse.json(result, { status: 201 })
   } catch (error) {
     console.error("Error registering repository:", error)
     return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth()
 
   if (!session?.user?.id) {

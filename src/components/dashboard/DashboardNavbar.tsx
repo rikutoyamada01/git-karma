@@ -144,16 +144,10 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                   </button>
                   <div className="border-t border-brand-border my-1"></div>
                   <button 
-                    onClick={() => { showNotImplemented('New Repository'); setIsCreateMenuOpen(false); }}
+                    onClick={() => { onViewChange('register-repo'); setIsCreateMenuOpen(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
                   >
-                    New repository
-                  </button>
-                  <button 
-                    onClick={() => { showNotImplemented('Import Repository'); setIsCreateMenuOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
-                  >
-                    Import repository
+                    Register Repository
                   </button>
                 </div>
               </>

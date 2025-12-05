@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { NextRequest } from "next/server"
+
 import { GET } from "@/app/api/github/repos/route"
 import { auth } from "@/lib/auth"
 import type { Session } from "next-auth"
@@ -19,8 +19,7 @@ describe("GET /api/github/repos", () => {
   it("should return 401 if user is not authenticated", async () => {
     vi.mocked(auth as unknown as () => Promise<Session | null>).mockResolvedValue(null)
 
-    const request = new NextRequest("http://localhost/api/github/repos")
-    const response = await GET(request)
+    const response = await GET()
 
     expect(response.status).toBe(401)
     await expect(response.json()).resolves.toEqual({ message: "Unauthorized" })
@@ -39,8 +38,7 @@ describe("GET /api/github/repos", () => {
       })
     )
 
-    const request = new NextRequest("http://localhost/api/github/repos")
-    const response = await GET(request)
+    const response = await GET()
 
     expect(response.status).toBe(401)
     await expect(response.json()).resolves.toEqual({ message: "Unauthorized" })
@@ -73,8 +71,7 @@ describe("GET /api/github/repos", () => {
       })
     )
 
-    const request = new NextRequest("http://localhost/api/github/repos")
-    const response = await GET(request)
+    const response = await GET()
 
     expect(response.status).toBe(200)
     const jsonResponse = await response.json() as { githubId: number }[]
@@ -115,8 +112,7 @@ describe("GET /api/github/repos", () => {
       })
     )
 
-    const request = new NextRequest("http://localhost/api/github/repos")
-    const response = await GET(request)
+    const response = await GET()
 
     expect(response.status).toBe(500)
     await expect(response.json()).resolves.toEqual({ message: "Failed to fetch repositories from GitHub", error: "GitHub API Error" })

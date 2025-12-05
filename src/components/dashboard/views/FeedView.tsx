@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { RefreshCw, GitPullRequest, CircleDot, Zap, Filter, ExternalLink, X, Check } from 'lucide-react';
-import { Issue } from '../types';
+import { Issue, RegisteredRepository } from '../types';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 import Image from 'next/image';
@@ -119,21 +119,59 @@ export const ActiveMissionCard = ({ issue, onAbandon }: { issue: Issue, onAbando
 
 export const FeedView = ({ 
     activeIssue, 
-    currentIssue, 
     onAbandon, 
     onPass, 
-    onAccept 
 }: { 
     activeIssue: Issue | null,
-    currentIssue: Issue,
     onAbandon: () => void,
     onPass: () => void,
-    onAccept: () => void
 }) => {
     const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+    const [repositories, setRepositories] = useState<RegisteredRepository[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch repositories on mount
+    React.useEffect(() => {
+        async function fetchRepositories() {
+            try {
+                const response = await fetch("/api/repositories");
+                if (response.ok) {
+                    const data = await response.json();
+                    setRepositories(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch repositories", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchRepositories();
+    }, []);
 
     if (activeIssue) {
         return <ActiveMissionCard issue={activeIssue} onAbandon={onAbandon} />;
+    }
+
+    if (loading) {
+        return <div className="p-8 text-center text-brand-muted">Loading feed...</div>;
+    }
+
+    // If no real data, fallback to currentIssue (mock) for now, or show empty state
+    // For this implementation, we will try to show the first fetched repo as a "card" if available
+    const displayRepo = repositories.length > 0 ? repositories[0] : null;
+
+    if (!displayRepo) {
+         return (
+            <div className="bg-background border border-brand-border rounded-md overflow-hidden relative min-h-[500px] flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-16 h-16 bg-brand-muted/10 rounded-full flex items-center justify-center mb-4">
+                    <SparklesIcon />
+                </div>
+                <h3 className="text-xl font-bold text-brand-text mb-2">No active projects found</h3>
+                <p className="text-brand-muted max-w-md mb-6">
+                    Be the first to register a repository and start earning Karma!
+                </p>
+            </div>
+         );
     }
 
     return (
@@ -158,40 +196,38 @@ export const FeedView = ({
                 <div className="w-full bg-brand-panel border border-brand-border rounded-xl p-6 shadow-2xl relative">
                     <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center gap-4">
-                            <Image src={currentIssue.icon} alt="" width={48} height={48} className="rounded-md border border-brand-border" />
+                            {/* Placeholder Icon since we don't store icons yet */}
+                            <div className="w-12 h-12 rounded-md border border-brand-border bg-brand-muted/10 flex items-center justify-center">
+                                <GitPullRequest className="w-6 h-6 text-brand-muted" />
+                            </div>
                             <div>
                                 <h3 
-                                    onClick={() => showNotImplemented('Repository Details')}
+                                    onClick={() => window.open(displayRepo.url, '_blank')}
                                     className="text-lg font-bold text-brand-text hover:text-brand-accent cursor-pointer flex items-center gap-2"
                                 >
-                                    {currentIssue.repo}
+                                    {displayRepo.fullName}
                                     <ExternalLink className="w-3 h-3 text-brand-muted" />
                                 </h3>
-                                <div className="text-xs text-brand-muted mt-1">{currentIssue.posted}</div>
+                                <div className="text-xs text-brand-muted mt-1">Registered by {displayRepo.registeredBy?.name || 'Unknown'}</div>
                             </div>
                         </div>
                         <div className="flex flex-col items-end">
                             <span className="text-2xl font-bold text-[#e3b341] flex items-center gap-1">
                                 <Zap className="w-5 h-5 fill-[#e3b341]" />
-                                {currentIssue.karma}
+                                ???
                             </span>
                             <span className="text-xs text-brand-muted uppercase tracking-wider">Bounty</span>
                         </div>
                     </div>
 
                     <div className="mb-6">
-                        <h2 className="text-xl font-bold text-brand-text mb-3 leading-snug">{currentIssue.title}</h2>
+                        <h2 className="text-xl font-bold text-brand-text mb-3 leading-snug">{displayRepo.name}</h2>
                         <p className="text-brand-muted leading-relaxed text-sm mb-4">
-                            {currentIssue.desc}
+                            {displayRepo.description || "No description provided."}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                            {currentIssue.tags.map(tag => (
-                                <span key={tag} className="px-2 py-1 rounded-full bg-[#30363d] text-brand-text text-xs border border-brand-border">
-                                    {tag}
-                                </span>
-                            ))}
-                            <span className="px-2 py-1 rounded-full text-xs font-medium border" style={{borderColor: currentIssue.languageColor, color: currentIssue.languageColor}}>
-                                {currentIssue.language}
+                            <span className="px-2 py-1 rounded-full bg-[#30363d] text-brand-text text-xs border border-brand-border">
+                                Repository
                             </span>
                         </div>
                     </div>
@@ -205,11 +241,11 @@ export const FeedView = ({
                             Pass
                         </button>
                         <button 
-                            onClick={onAccept}
+                            onClick={() => window.open(displayRepo.url, '_blank')}
                             className="flex items-center justify-center gap-2 py-3 rounded-lg bg-brand-success text-brand-text hover:bg-brand-success/80 transition-all font-bold shadow-lg shadow-green-900/20"
                         >
                             <Check className="w-5 h-5" />
-                            Accept Issue
+                            View on GitHub
                         </button>
                     </div>
                 </div>

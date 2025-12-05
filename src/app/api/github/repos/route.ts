@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
 export interface GithubRepository {
   id: number;
@@ -10,7 +10,7 @@ export interface GithubRepository {
   fork: boolean;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth()
 
   if (!session?.user?.accessToken) {

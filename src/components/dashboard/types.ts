@@ -57,4 +57,20 @@ export interface ContributedRepo {
     description: string;
 }
 
-export type DashboardView = 'feed' | 'create' | 'history' | 'my-requests' | 'settings' | 'profile' | 'contributions' | 'search';
+export type DashboardView = 'feed' | 'create' | 'history' | 'my-requests' | 'settings' | 'profile' | 'contributions' | 'search' | 'register-repo';
+
+export interface RegisteredRepository {
+    id: string;
+    githubId: number;
+    name: string;
+    fullName: string;
+    url: string;
+    description: string | null;
+    registeredBy: {
+        id: string;
+        name: string | null;
+        username: string | null;
+        image: string | null;
+    };
+    createdAt: string;
+}

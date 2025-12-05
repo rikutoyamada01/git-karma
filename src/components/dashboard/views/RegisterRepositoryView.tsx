@@ -2,118 +2,230 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import toast from "react-hot-toast" // react-hot-toast をインポート
+import toast from "react-hot-toast"
+import { Book, Check, Loader, Plus, X, Zap } from "lucide-react"
 
-interface GithubRepository {
-  githubId: number
+interface GitHubRepo {
+  id: number
   name: string
-  fullName: string
-  url: string
+  full_name: string
+  html_url: string
   description: string | null
+  private: boolean
 }
 
-export default function RegisterRepositoryView() {
-  const { data: session, status } = useSession()
-  const [githubRepos, setGithubRepos] = useState<GithubRepository[]>([])
-  const [loadingRepos, setLoadingRepos] = useState(true)
-  const [registeringRepoId, setRegisteringRepoId] = useState<number | null>(null)
-  const [error, setError] = useState<string | null>(null)
+interface RegisterRepositoryViewProps {
+  onCancel: () => void
+}
 
+export default function RegisterRepositoryView({ onCancel }: RegisterRepositoryViewProps) {
+  const { data: session, status, update } = useSession()
+  const [repos, setRepos] = useState<GitHubRepo[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [registering, setRegistering] = useState<number | null>(null)
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null)
+  const [userKarma, setUserKarma] = useState<number>(0)
+
+  // Fetch user karma
   useEffect(() => {
-    async function fetchGithubRepos() {
+    async function fetchUserKarma() {
       if (status === "authenticated") {
-        setLoadingRepos(true)
+        try {
+          const response = await fetch("/api/users")
+          if (response.ok) {
+            const data = await response.json()
+            setUserKarma(data.karma)
+          }
+        } catch (error) {
+          console.error("Failed to fetch user karma", error)
+        }
+      }
+    }
+    fetchUserKarma()
+  }, [status])
+
+  // Fetch GitHub repos
+  useEffect(() => {
+    async function fetchRepos() {
+      if (status === "authenticated") {
+        setLoading(true)
         setError(null)
         try {
-          const response = await fetch("/api/github/repos")
+          const accessToken = session?.user?.accessToken;
+
+          const response = await fetch("https://api.github.com/user/repos?type=owner&sort=updated&per_page=100", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+
           if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.message || "Failed to fetch GitHub repositories")
+            throw new Error("Failed to fetch repositories from GitHub")
           }
-          const data: GithubRepository[] = await response.json()
-          setGithubRepos(data)
+
+          const data = await response.json()
+          setRepos(data)
         } catch (err: unknown) {
-          const message = err instanceof Error ? err.message : "Failed to fetch GitHub repositories"
-          setError(message)
-          toast.error(message)
+          setError(err instanceof Error ? err.message : "An unknown error occurred")
         } finally {
-          setLoadingRepos(false)
+          setLoading(false)
         }
       } else if (status === "unauthenticated") {
-        setLoadingRepos(false)
+        setLoading(false)
       }
     }
 
-    fetchGithubRepos()
-  }, [status])
+    fetchRepos()
+  }, [status, session])
 
-  const handleRegisterRepository = async (repo: GithubRepository) => {
-    setRegisteringRepoId(repo.githubId)
-    setError(null)
+  const handleRegister = async () => {
+    if (!selectedRepo) return
+
+    if (userKarma < 50) {
+      toast.error("Insufficient Karma. You need 50 Karma to register a repository.")
+      return
+    }
+
+    setRegistering(selectedRepo.id)
     try {
       const response = await fetch("/api/repositories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(repo),
+        body: JSON.stringify({
+          githubId: selectedRepo.id,
+          name: selectedRepo.name,
+          fullName: selectedRepo.full_name,
+          url: selectedRepo.html_url,
+          description: selectedRepo.description,
+        }),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
+        if (response.status === 409) {
+          throw new Error("This repository is already registered.")
+        }
         throw new Error(errorData.message || "Failed to register repository")
       }
 
-      toast.success("Repository registered successfully!")
-      setGithubRepos((prev) => prev.filter((r) => r.githubId !== repo.githubId))
+      toast.success(`Successfully registered ${selectedRepo.full_name}!`)
+      await update() // Update session to reflect karma change
+      onCancel() // Go back to feed
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to register repository"
-      setError(message)
-      toast.error(message)
+      toast.error(err instanceof Error ? err.message : "Failed to register repository")
     } finally {
-      setRegisteringRepoId(null)
+      setRegistering(null)
     }
   }
 
-  if (status === "loading" || loadingRepos) {
-    return <div className="p-4">Loading GitHub repositories...</div>
+  if (status === "loading" || loading) {
+    return <div className="p-8 text-center text-brand-muted">Loading repositories...</div>
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>
-  }
-
-  if (!session?.user) {
-    return <div className="p-4">Please log in to register repositories.</div>
+    return <div className="p-4 text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">Error: {error}</div>
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Register Your GitHub Repositories</h1>
-      {githubRepos.length === 0 ? (
-        <p>No GitHub repositories found or all have been registered.</p>
-      ) : (
-        <ul className="space-y-4">
-          {githubRepos.map((repo) => (
-            <li key={repo.githubId} className="flex items-center justify-between p-4 border rounded-md shadow-sm">
-              <div>
-                <h2 className="text-lg font-semibold">{repo.fullName}</h2>
-                <p className="text-sm text-gray-600">{repo.description || "No description"}</p>
-                <a href={repo.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
-                  View on GitHub
-                </a>
-              </div>
-              <button // 仮の Button コンポーネント
-                onClick={() => handleRegisterRepository(repo)}
-                disabled={registeringRepoId === repo.githubId}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+    <div className="bg-brand-panel border border-brand-border rounded-md overflow-hidden">
+      <div className="p-4 border-b border-brand-border flex items-center justify-between">
+        <h3 className="font-bold text-brand-text">Register Repository</h3>
+        <button onClick={onCancel} className="text-brand-muted hover:text-brand-text">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="p-6">
+        <div className="flex items-center mb-8 text-sm">
+          <div className={`flex items-center gap-2 ${selectedRepo ? 'text-brand-accent' : 'text-brand-text'}`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${selectedRepo ? 'border-brand-accent bg-brand-accent/10' : 'border-brand-border'}`}>1</div>
+            <span>Select Repository</span>
+          </div>
+          <div className="w-8 h-px bg-[#30363d] mx-2"></div>
+          <div className={`flex items-center gap-2 ${selectedRepo ? 'text-brand-text' : 'text-brand-muted'}`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${selectedRepo ? 'border-brand-border' : 'border-brand-border'}`}>2</div>
+            <span>Confirm & Pay</span>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <label className="block text-sm font-semibold text-brand-text">Select a Repository to Register</label>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            {repos.map((repo) => (
+              <div
+                key={repo.id}
+                onClick={() => setSelectedRepo(repo)}
+                className={`p-3 rounded-md border cursor-pointer flex items-center justify-between group transition-colors ${
+                  selectedRepo?.id === repo.id
+                    ? 'border-brand-accent bg-brand-accent/10'
+                    : 'border-brand-border hover:border-brand-muted'
+                }`}
               >
-                {registeringRepoId === repo.githubId ? "Registering..." : "Register"}
+                <div className="flex items-center gap-3">
+                  <Book className="w-4 h-4 text-brand-muted" />
+                  <div>
+                    <div className="text-brand-text font-medium">{repo.full_name}</div>
+                    <div className="text-xs text-brand-muted truncate max-w-[300px]">{repo.description || "No description"}</div>
+                  </div>
+                  {repo.private && <span className="text-xs border border-brand-border px-1.5 rounded-full text-brand-muted">Private</span>}
+                </div>
+                {selectedRepo?.id === repo.id && <Check className="w-4 h-4 text-brand-accent" />}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {selectedRepo && (
+          <div className="mt-8 pt-6 border-t border-brand-border animate-in fade-in slide-in-from-top-2 duration-300">
+             <div className="bg-background rounded-md p-4 border border-brand-border mb-6">
+                <div className="flex justify-between text-sm mb-2">
+                    <span className="text-brand-muted">Registration Fee</span>
+                    <span className="text-brand-text">50</span>
+                </div>
+                <div className="border-t border-brand-border my-2"></div>
+                <div className="flex justify-between font-bold">
+                    <span className="text-brand-text">Total Cost</span>
+                    <span className="text-[#e3b341] flex items-center gap-1">
+                        <Zap className="w-3 h-3" />
+                        50
+                    </span>
+                </div>
+                <div className="text-xs text-right mt-2 text-brand-muted">
+                  Your Balance: {userKarma} Karma
+                </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={onCancel}
+                className="text-brand-muted hover:text-brand-text text-sm font-medium px-4 py-2"
+              >
+                Cancel
               </button>
-            </li>
-          ))}
-        </ul>
-      )}
+              <button
+                onClick={handleRegister}
+                disabled={!!registering || userKarma < 50}
+                className="bg-brand-success hover:bg-brand-success/80 text-white px-6 py-2 rounded-md font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {registering === selectedRepo.id ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Pay 50 Karma & Register
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

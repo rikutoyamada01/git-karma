@@ -4,6 +4,7 @@ import { RECENT_REPOS } from './mockData';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 import Image from 'next/image';
+import { DashboardView } from './types';
 
 const UserStatsCard = ({ karma, onHistoryClick }: { karma: number, onHistoryClick: () => void }) => {
   const level = Math.floor(karma / 1000) + 1;
@@ -60,8 +61,9 @@ const UserStatsCard = ({ karma, onHistoryClick }: { karma: number, onHistoryClic
   );
 };
 
-export const LeftSidebar = ({ karma, onHistoryClick }: { karma: number, onHistoryClick: () => void }) => {
+export const LeftSidebar = ({ karma, onHistoryClick, onViewChange }: { karma: number, onHistoryClick: () => void, onViewChange: (view: DashboardView) => void }) => {
   const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+
 
   return (
     <div className="w-full md:w-[296px] shrink-0 md:block hidden">
@@ -73,18 +75,11 @@ export const LeftSidebar = ({ karma, onHistoryClick }: { karma: number, onHistor
                   <h2 className="text-sm font-semibold text-brand-text">Top Repositories</h2>
                   <div className="flex gap-2"> {/* 新しい div でボタンを囲む */}
                     <button
-                      onClick={() => showNotImplemented('Register Repository')}
+                      onClick={() => onViewChange('register-repo')}
                       className="bg-brand-accent text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-accent/80"
                     >
                       <Book className="w-3 h-3" />
                       Register
-                    </button>
-                    <button
-                      onClick={() => showNotImplemented('Browse Repositories')}
-                      className="bg-brand-info text-brand-text text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1 hover:bg-brand-info/80"
-                    >
-                      <GitPullRequest className="w-3 h-3" />
-                      Browse
                     </button>
                     {/* 既存の New ボタン */}
                     <button
