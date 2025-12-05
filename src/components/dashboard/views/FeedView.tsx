@@ -5,6 +5,9 @@ import { Issue, RegisteredRepository } from '../types';
 import { useNotImplemented } from '@/hooks/useNotImplemented';
 import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LoadingState } from '@/components/ui/loading-state';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export const SparklesIcon = () => (
     <svg className="w-4 h-4 text-[#e3b341]" fill="currentColor" viewBox="0 0 24 24">
@@ -153,7 +156,7 @@ export const FeedView = ({
     }
 
     if (loading) {
-        return <div className="p-8 text-center text-brand-muted">Loading feed...</div>;
+        return <LoadingState text="Loading feed..." />;
     }
 
     // If no real data, fallback to currentIssue (mock) for now, or show empty state
@@ -162,22 +165,20 @@ export const FeedView = ({
 
     if (!displayRepo) {
          return (
-            <div className="bg-background border border-brand-border rounded-md overflow-hidden relative min-h-[500px] flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-16 h-16 bg-brand-muted/10 rounded-full flex items-center justify-center mb-4">
-                    <SparklesIcon />
-                </div>
-                <h3 className="text-xl font-bold text-brand-text mb-2">No active projects found</h3>
-                <p className="text-brand-muted max-w-md mb-6">
-                    Be the first to register a repository and start earning Karma!
-                </p>
-            </div>
+            <Card className="min-h-[500px] flex flex-col items-center justify-center">
+                <EmptyState
+                    icon={SparklesIcon}
+                    title="No active projects found"
+                    description="Be the first to register a repository and start earning Karma!"
+                />
+            </Card>
          );
     }
 
     return (
-        <div className="bg-background border border-brand-border rounded-md overflow-hidden relative min-h-[500px] flex flex-col">
+        <Card className="min-h-[500px] flex flex-col relative">
             <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
-            <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-brand-border p-4 space-y-0">
                 <div className="flex items-center gap-2">
                     <SparklesIcon />
                     <span className="font-bold text-brand-text">Suggested for you</span>
@@ -185,9 +186,9 @@ export const FeedView = ({
                 <div className="flex items-center gap-2">
                     <button onClick={() => showNotImplemented('Filter')} className="text-brand-muted hover:text-brand-accent"><Filter className="w-4 h-4" /></button>
                 </div>
-            </div>
+            </CardHeader>
 
-            <div className="flex-1 p-6 flex flex-col items-center justify-center relative">
+            <CardContent className="flex-1 p-6 flex flex-col items-center justify-center relative">
                 {/* Background Cards Effect */}
                 <div className="absolute top-8 w-[95%] h-full bg-brand-panel border border-brand-border rounded-xl opacity-40 scale-95 -z-10 translate-y-2"></div>
                 <div className="absolute top-10 w-[90%] h-full bg-brand-panel border border-brand-border rounded-xl opacity-20 scale-90 -z-20 translate-y-4"></div>
@@ -249,7 +250,7 @@ export const FeedView = ({
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 };

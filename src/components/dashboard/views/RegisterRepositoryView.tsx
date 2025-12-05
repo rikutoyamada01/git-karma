@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import toast from "react-hot-toast"
 import { Book, Check, Loader, Plus, X, Zap } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LoadingState } from "@/components/ui/loading-state"
+import { ErrorState } from "@/components/ui/error-state"
 
 interface GitHubRepo {
   id: number
@@ -122,23 +125,23 @@ export default function RegisterRepositoryView({ onCancel }: RegisterRepositoryV
   }
 
   if (status === "loading" || loading) {
-    return <div className="p-8 text-center text-brand-muted">Loading repositories...</div>
+    return <LoadingState text="Loading repositories..." />
   }
 
   if (error) {
-    return <div className="p-4 text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">Error: {error}</div>
+    return <ErrorState message={error} />
   }
 
   return (
-    <div className="bg-brand-panel border border-brand-border rounded-md overflow-hidden">
-      <div className="p-4 border-b border-brand-border flex items-center justify-between">
-        <h3 className="font-bold text-brand-text">Register Repository</h3>
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between border-b border-brand-border p-4 space-y-0">
+        <CardTitle className="text-base font-bold text-brand-text">Register Repository</CardTitle>
         <button onClick={onCancel} className="text-brand-muted hover:text-brand-text">
           <X className="w-5 h-5" />
         </button>
-      </div>
+      </CardHeader>
 
-      <div className="p-6">
+      <CardContent className="p-6">
         <div className="flex items-center mb-8 text-sm">
           <div className={`flex items-center gap-2 ${selectedRepo ? 'text-brand-accent' : 'text-brand-text'}`}>
             <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${selectedRepo ? 'border-brand-accent bg-brand-accent/10' : 'border-brand-border'}`}>1</div>
@@ -225,7 +228,7 @@ export default function RegisterRepositoryView({ onCancel }: RegisterRepositoryV
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

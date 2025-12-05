@@ -16,6 +16,9 @@ export type UserProfileData = {
   };
 };
 import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LoadingState } from '@/components/ui/loading-state';
+import { ErrorState } from '@/components/ui/error-state';
 
 type ProfileViewProps = {
     initialUser?: UserProfileData | null;
@@ -108,6 +111,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         user?.image ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || user?.username || 'Guest User')}&background=random&size=300`;
 
+    if (loading) {
+        return <LoadingState text="Loading profile..." />;
+    }
+
+    if (error) {
+        return <ErrorState message={error} />;
+    }
+
     return (
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start max-w-7xl mx-auto">
             <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
@@ -125,18 +136,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
                 <div className="pt-4 pb-4">
                     <h1 className="text-2xl font-bold text-brand-text leading-tight">
-                        {loading ? 'Loading...' : user?.name || 'Unnamed User'}
+                        {user?.name || 'Unnamed User'}
                     </h1>
                     <div className="text-xl text-brand-muted font-light">
                         {user?.username || 'no-username'}
                     </div>
                 </div>
 
-                {error && (
-                    <div className="mb-3 text-xs text-red-400 bg-red-950/40 border border-red-900 rounded px-2 py-1">
-                        {error}
-                    </div>
-                )}
                 {saveMessage && (
                     <div className="mb-3 text-xs text-emerald-300 bg-emerald-900/30 border border-emerald-700 rounded px-2 py-1">
                         {saveMessage}
@@ -182,47 +188,49 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     </button>
                 </form>
 
-                <div className="mb-6 bg-background border border-brand-border rounded-lg p-4 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
-                    <h3 className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-3">GitKarma Stats</h3>
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                         <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                             {(user?.karma ?? 0).toString().slice(0, 2)}
-                         </div>
-                         <div>
-                             <div className="text-sm font-bold text-brand-text">Level 12</div>
-                             <div className="text-xs text-brand-muted">Code Grandmaster</div>
-                         </div>
-                    </div>
+                <Card className="mb-6 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+                    <CardContent className="p-4">
+                        <h3 className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-3">GitKarma Stats</h3>
+                        
+                        <div className="flex items-center gap-3 mb-4">
+                             <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                 {(user?.karma ?? 0).toString().slice(0, 2)}
+                             </div>
+                             <div>
+                                 <div className="text-sm font-bold text-brand-text">Level 12</div>
+                                 <div className="text-xs text-brand-muted">Code Grandmaster</div>
+                             </div>
+                        </div>
 
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                             <div className="flex items-center gap-2 text-brand-text">
-                                 <Zap className="w-4 h-4 text-[#e3b341]" />
-                                 Total Karma
-                             </div>
-                             <span className="font-mono font-bold">{user?.karma ?? 0}</span>
-                        </div>
-                         <div className="flex items-center justify-between text-sm">
-                             <div className="flex items-center gap-2 text-brand-text">
-                                 <Target className="w-4 h-4 text-brand-success" />
-                                 Karma Sent
-                             </div>
-                             <span className="font-mono font-bold">
-                                {user?._count?.transactionsSent ?? 0}
-                             </span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-2 text-brand-text">
-                                <GitBranch className="w-4 h-4 text-[#a855f7]" />
-                                Karma Received
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between text-sm">
+                                 <div className="flex items-center gap-2 text-brand-text">
+                                     <Zap className="w-4 h-4 text-[#e3b341]" />
+                                     Total Karma
+                                 </div>
+                                 <span className="font-mono font-bold">{user?.karma ?? 0}</span>
                             </div>
-                            <span className="font-mono font-bold">
-                                {user?._count?.transactionsReceived ?? 0}
-                            </span>
+                             <div className="flex items-center justify-between text-sm">
+                                 <div className="flex items-center gap-2 text-brand-text">
+                                     <Target className="w-4 h-4 text-brand-success" />
+                                     Karma Sent
+                                 </div>
+                                 <span className="font-mono font-bold">
+                                    {user?._count?.transactionsSent ?? 0}
+                                 </span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2 text-brand-text">
+                                    <GitBranch className="w-4 h-4 text-[#a855f7]" />
+                                    Karma Received
+                                </div>
+                                <span className="font-mono font-bold">
+                                    {user?._count?.transactionsReceived ?? 0}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Main Content */}
@@ -232,42 +240,44 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         <div className="flex items-center justify-between mb-2">
                              <h2 className="text-base font-normal text-brand-text">Karma Activity (GitKarma)</h2>
                         </div>
-                        <div className="border border-brand-border rounded-md p-4 bg-background overflow-hidden">
-                             <div className="flex items-center justify-between mb-4">
-                                 <h3 className="text-sm font-semibold text-brand-text">1,234 contributions in the last year</h3>
-                                 <div className="text-xs text-brand-muted flex items-center gap-4">
-                                     <div className="flex items-center gap-1">
-                                         <span className="w-3 h-3 bg-brand-panel border border-brand-border rounded-sm"></span>
-                                         Less
-                                     </div>
-                                     <div className="flex items-center gap-1">
-                                         <span className="w-3 h-3 bg-[#0e4429] rounded-sm"></span>
-                                         <span className="w-3 h-3 bg-[#006d32] rounded-sm"></span>
-                                         <span className="w-3 h-3 bg-[#26a641] rounded-sm"></span>
-                                         <span className="w-3 h-3 bg-[#39d353] rounded-sm"></span>
-                                         More
+                        <Card className="overflow-hidden">
+                             <CardContent className="p-4">
+                                 <div className="flex items-center justify-between mb-4">
+                                     <h3 className="text-sm font-semibold text-brand-text">1,234 contributions in the last year</h3>
+                                     <div className="text-xs text-brand-muted flex items-center gap-4">
+                                         <div className="flex items-center gap-1">
+                                             <span className="w-3 h-3 bg-brand-panel border border-brand-border rounded-sm"></span>
+                                             Less
+                                         </div>
+                                         <div className="flex items-center gap-1">
+                                             <span className="w-3 h-3 bg-[#0e4429] rounded-sm"></span>
+                                             <span className="w-3 h-3 bg-[#006d32] rounded-sm"></span>
+                                             <span className="w-3 h-3 bg-[#26a641] rounded-sm"></span>
+                                             <span className="w-3 h-3 bg-[#39d353] rounded-sm"></span>
+                                             More
+                                         </div>
                                      </div>
                                  </div>
-                             </div>
-                             
-                             {/* Simulated Graph */}
-                             <div className="flex gap-[2px] h-[100px] items-end justify-center opacity-80">
-                                 {Array.from({ length: 52 }).map((_, w) => (
-                                     <div key={w} className="flex flex-col gap-[2px]">
-                                         {Array.from({ length: 7 }).map((_, d) => {
-                                             const level = Math.random() > 0.7 ? Math.floor(Math.random() * 4) + 1 : 0;
-                                             const colors = ['bg-brand-panel', 'bg-[#0e4429]', 'bg-[#006d32]', 'bg-[#26a641]', 'bg-[#39d353]'];
-                                             return (
-                                                 <div 
-                                                    key={d} 
-                                                    className={`w-[10px] h-[10px] rounded-[2px] ${colors[level]} ${level === 0 ? 'border border-brand-border/30' : ''}`}
-                                                 ></div>
-                                             );
-                                         })}
-                                     </div>
-                                 ))}
-                             </div>
-                        </div>
+                                 
+                                 {/* Simulated Graph */}
+                                 <div className="flex gap-[2px] h-[100px] items-end justify-center opacity-80">
+                                     {Array.from({ length: 52 }).map((_, w) => (
+                                         <div key={w} className="flex flex-col gap-[2px]">
+                                             {Array.from({ length: 7 }).map((_, d) => {
+                                                 const level = Math.random() > 0.7 ? Math.floor(Math.random() * 4) + 1 : 0;
+                                                 const colors = ['bg-brand-panel', 'bg-[#0e4429]', 'bg-[#006d32]', 'bg-[#26a641]', 'bg-[#39d353]'];
+                                                 return (
+                                                     <div 
+                                                        key={d} 
+                                                        className={`w-[10px] h-[10px] rounded-[2px] ${colors[level]} ${level === 0 ? 'border border-brand-border/30' : ''}`}
+                                                     ></div>
+                                                 );
+                                             })}
+                                         </div>
+                                     ))}
+                                 </div>
+                            </CardContent>
+                        </Card>
                     </div>
                     
                     <div className="space-y-4">
