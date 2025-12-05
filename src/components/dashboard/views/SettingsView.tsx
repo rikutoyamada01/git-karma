@@ -1,11 +1,14 @@
 
 import React, { useState } from 'react';
 import { User, Bell, Shield, Key, CreditCard } from 'lucide-react';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 type SettingsTab = 'profile' | 'account' | 'security' | 'notifications' | 'ssh' | 'billing';
 
 export const SettingsView = () => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
 
     const getTabClass = (tabName: SettingsTab) => {
         const baseClass = "w-full text-left px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors duration-200";
@@ -17,6 +20,7 @@ export const SettingsView = () => {
 
     return (
         <div className="flex flex-col md:flex-row gap-8 items-start max-w-6xl">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             {/* Settings Sidebar */}
             <div className="w-full md:w-64 flex-shrink-0">
                 <nav className="space-y-1">
@@ -111,7 +115,7 @@ export const SettingsView = () => {
                             </div>
 
                             <div className="pt-4 border-t border-brand-border mt-4">
-                                <button className="bg-brand-success hover:bg-brand-success/80 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">
+                                <button onClick={() => showNotImplemented('Update Profile')} className="bg-brand-success hover:bg-brand-success/80 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">
                                     Update profile
                                 </button>
                             </div>
@@ -128,7 +132,7 @@ export const SettingsView = () => {
                              <div className="flex flex-col gap-2">
                                 <h3 className="text-lg font-medium text-brand-text">Change username</h3>
                                 <p className="text-sm text-brand-muted">Changing your username can have unintended side effects.</p>
-                                <button className="w-fit bg-[#21262d] border border-brand-border hover:bg-brand-border text-brand-text px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                <button onClick={() => showNotImplemented('Change Username')} className="w-fit bg-[#21262d] border border-brand-border hover:bg-brand-border text-brand-text px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                     Change username
                                 </button>
                              </div>
@@ -138,7 +142,7 @@ export const SettingsView = () => {
                              <div className="flex flex-col gap-2">
                                 <h3 className="text-lg font-medium text-brand-text">Export account data</h3>
                                 <p className="text-sm text-brand-muted">Export all your data from GitKarma.</p>
-                                <button className="w-fit bg-[#21262d] border border-brand-border hover:bg-brand-border text-brand-text px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                <button onClick={() => showNotImplemented('Export Data')} className="w-fit bg-[#21262d] border border-brand-border hover:bg-brand-border text-brand-text px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                     Start export
                                 </button>
                              </div>
@@ -148,7 +152,7 @@ export const SettingsView = () => {
                              <div className="flex flex-col gap-2">
                                 <h3 className="text-lg font-medium text-red-500">Delete account</h3>
                                 <p className="text-sm text-brand-muted">Once you delete your account, there is no going back. Please be certain.</p>
-                                <button className="w-fit bg-[#21262d] border border-red-500 text-red-500 hover:bg-red-500/10 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                <button onClick={() => showNotImplemented('Delete Account')} className="w-fit bg-[#21262d] border border-red-500 text-red-500 hover:bg-red-500/10 px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                     Delete account
                                 </button>
                              </div>

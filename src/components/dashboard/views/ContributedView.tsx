@@ -1,8 +1,10 @@
-
 import React, { useState } from 'react';
 import { GitPullRequest, Zap, ArrowRight, Star, Clock, ChevronLeft, Search, Filter, ExternalLink } from 'lucide-react';
 import { CONTRIBUTED_REPOS, AVAILABLE_CONTRIBUTION_ISSUES } from '../mockData';
 import { ContributedRepo, Issue } from '../types';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
 
 interface ContributedViewProps {
     onAcceptIssue: (issue: Issue) => void;
@@ -10,6 +12,7 @@ interface ContributedViewProps {
 
 export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue }) => {
     const [selectedRepo, setSelectedRepo] = useState<ContributedRepo | null>(null);
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
 
     // Detail View: Show available issues for the selected repo
     if (selectedRepo) {
@@ -17,6 +20,7 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
 
         return (
             <div className="bg-background border border-brand-border rounded-md overflow-hidden min-h-[500px]">
+                <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
                 <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center gap-4">
                     <button 
                         onClick={() => setSelectedRepo(null)}
@@ -24,7 +28,7 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <img src={selectedRepo.icon} alt="" className="w-8 h-8 rounded-md border border-brand-border" />
+                    <Image src={selectedRepo.icon} alt="" width={32} height={32} className="rounded-md border border-brand-border" />
                     <div>
                         <h3 className="font-bold text-brand-text leading-tight">{selectedRepo.name}</h3>
                         <p className="text-xs text-brand-muted">Select a new task to continue your contribution streak</p>
@@ -49,7 +53,10 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
                                     </span>
                                 </div>
                                 
-                                <h4 className="text-lg font-bold text-brand-text mb-2 group-hover:text-brand-accent transition-colors cursor-pointer flex items-center gap-2">
+                                <h4 
+                                    onClick={() => showNotImplemented('Issue Details')}
+                                    className="text-lg font-bold text-brand-text mb-2 group-hover:text-brand-accent transition-colors cursor-pointer flex items-center gap-2"
+                                >
                                     {issue.title}
                                     <ExternalLink className="w-3 h-3 text-brand-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </h4>
@@ -92,16 +99,17 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
     // List View: Show contributed repos
     return (
         <div className="bg-background border border-brand-border rounded-md overflow-hidden min-h-[500px]">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center justify-between">
                 <div>
                     <h3 className="font-bold text-brand-text">Your Contributions</h3>
                     <p className="text-xs text-brand-muted">Repositories you have earned Karma from</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="p-1.5 text-brand-muted hover:text-brand-text">
+                    <button onClick={() => showNotImplemented('Search')} className="p-1.5 text-brand-muted hover:text-brand-text">
                         <Search className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-brand-muted hover:text-brand-text">
+                    <button onClick={() => showNotImplemented('Filter')} className="p-1.5 text-brand-muted hover:text-brand-text">
                         <Filter className="w-4 h-4" />
                     </button>
                 </div>
@@ -110,10 +118,13 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
             <div className="divide-y divide-[#30363d]">
                 {CONTRIBUTED_REPOS.map((repo, idx) => (
                     <div key={idx} className="p-4 flex items-center gap-4 hover:bg-brand-panel transition-colors">
-                        <img src={repo.icon} alt="" className="w-10 h-10 rounded-md border border-brand-border" />
+                        <Image src={repo.icon} alt="" width={40} height={40} className="rounded-md border border-brand-border" />
                         
                         <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-brand-text text-base hover:text-brand-accent cursor-pointer truncate">
+                            <h4 
+                                onClick={() => showNotImplemented('Repository Details')}
+                                className="font-bold text-brand-text text-base hover:text-brand-accent cursor-pointer truncate"
+                            >
                                 {repo.name}
                             </h4>
                             <p className="text-xs text-brand-muted truncate mb-1">
@@ -148,7 +159,7 @@ export const ContributedView: React.FC<ContributedViewProps> = ({ onAcceptIssue 
 
             <div className="p-8 text-center border-t border-brand-border bg-brand-panel/50">
                 <p className="text-sm text-brand-muted mb-2">Want to add more to your portfolio?</p>
-                <button className="text-[#58a6ff] hover:underline text-sm font-medium">
+                <button onClick={() => showNotImplemented('Explore Overview')} className="text-[#58a6ff] hover:underline text-sm font-medium">
                     Explore new projects in Overview
                 </button>
             </div>

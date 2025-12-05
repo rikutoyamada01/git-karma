@@ -3,6 +3,8 @@ import React from 'react';
 import { ExternalLink, Zap } from 'lucide-react';
 import { Issue } from '../types';
 import { MOCK_ISSUES, AVAILABLE_CONTRIBUTION_ISSUES } from '../mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
 
 interface SearchViewProps {
     query: string;
@@ -10,6 +12,7 @@ interface SearchViewProps {
 }
 
 export const SearchView: React.FC<SearchViewProps> = ({ query, onAccept }) => {
+    const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
     const allIssues = [
         ...MOCK_ISSUES,
         ...Object.values(AVAILABLE_CONTRIBUTION_ISSUES).flat()
@@ -25,6 +28,7 @@ export const SearchView: React.FC<SearchViewProps> = ({ query, onAccept }) => {
 
     return (
         <div className="bg-background border border-brand-border rounded-md overflow-hidden min-h-[500px]">
+            <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
             <div className="p-4 border-b border-brand-border bg-brand-panel flex items-center justify-between">
                 <div>
                     <h3 className="font-bold text-brand-text">Search Results</h3>
@@ -58,7 +62,10 @@ export const SearchView: React.FC<SearchViewProps> = ({ query, onAccept }) => {
                                 </span>
                             </div>
                             
-                            <h4 className="text-lg font-bold text-brand-text mb-2 group-hover:text-brand-accent transition-colors cursor-pointer flex items-center gap-2">
+                            <h4 
+                                onClick={() => showNotImplemented('Issue Details')}
+                                className="text-lg font-bold text-brand-text mb-2 group-hover:text-brand-accent transition-colors cursor-pointer flex items-center gap-2"
+                            >
                                 {issue.title}
                                 <ExternalLink className="w-3 h-3 text-brand-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                             </h4>

@@ -1,10 +1,13 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, Zap, Plus, ChevronDown, Bell, Ghost, LogOut, Settings, User, X, Search, GitPullRequest, Inbox } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { DashboardView } from './types';
 import { RECENT_REPOS } from './mockData';
+import { useNotImplemented } from '@/hooks/useNotImplemented';
+import { NotImplementedDialog } from '@/components/ui/NotImplementedDialog';
+import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 interface DashboardNavbarProps {
   onNavigate: (page: string) => void;
@@ -34,6 +37,16 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isOpen, featureName, showNotImplemented, closeNotImplemented } = useNotImplemented();
+  const { data: session } = useSession();
+  const user = session?.user as
+    | ({ name?: string | null; image?: string | null; username?: string | null })
+    | undefined;
+
+  const userName = user?.name ?? user?.username ?? 'Guest';
+  const userImage =
+    user?.image ||
+    (user?.username ? `https://github.com/${user.username}.png` : undefined);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -60,6 +73,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
 
   return (
     <>
+      <NotImplementedDialog isOpen={isOpen} onClose={closeNotImplemented} featureName={featureName} />
       <header className="bg-brand-panel py-3 px-4 md:px-6 border-b border-brand-border flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4 w-full md:w-auto">
           <button 
@@ -73,7 +87,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="w-8 h-8 flex items-center justify-center">
-              <img src="/icon.png" alt="GitKarma Logo" className="w-full h-full object-contain" />
+              <Image src="/icon.png" alt="GitKarma Logo" width={32} height={32} className="object-contain" />
             </div>
             <span className="font-bold text-brand-text text-sm hidden md:block group-hover:text-brand-accent">GitKarma</span>
           </Link>
@@ -94,11 +108,11 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
           </div>
 
           <nav className="hidden md:flex items-center gap-1 text-sm font-bold text-brand-text ml-2">
-            <a href="#" className="px-2 hover:text-brand-accent">Pull requests</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Issues</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Codespaces</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Marketplace</a>
-            <a href="#" className="px-2 hover:text-brand-accent">Explore</a>
+            <button onClick={() => showNotImplemented('Pull Requests')} className="px-2 hover:text-brand-accent">Pull requests</button>
+            <button onClick={() => showNotImplemented('Issues')} className="px-2 hover:text-brand-accent">Issues</button>
+            <button onClick={() => showNotImplemented('Codespaces')} className="px-2 hover:text-brand-accent">Codespaces</button>
+            <button onClick={() => showNotImplemented('Marketplace')} className="px-2 hover:text-brand-accent">Marketplace</button>
+            <button onClick={() => showNotImplemented('Explore')} className="px-2 hover:text-brand-accent">Explore</button>
           </nav>
         </div>
 
@@ -129,10 +143,16 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                     New Karma Request
                   </button>
                   <div className="border-t border-brand-border my-1"></div>
-                  <button className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white">
+                  <button 
+                    onClick={() => { showNotImplemented('New Repository'); setIsCreateMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
+                  >
                     New repository
                   </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white">
+                  <button 
+                    onClick={() => { showNotImplemented('Import Repository'); setIsCreateMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-[#1f6feb] hover:text-white"
+                  >
                     Import repository
                   </button>
                 </div>
@@ -155,7 +175,17 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             >
               <div className="w-5 h-5 rounded-full bg-[#30363d] flex items-center justify-center border border-brand-border overflow-hidden">
-                <Ghost className="w-3 h-3 text-brand-muted" />
+                {userImage ? (
+                  <Image
+                    src={userImage}
+                    alt={userName}
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 object-cover"
+                  />
+                ) : (
+                  <Ghost className="w-3 h-3 text-brand-muted" />
+                )}
               </div>
               <ChevronDown className="w-3 h-3 text-brand-text" />
             </button>
@@ -165,7 +195,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                 <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)}></div>
                 <div className="absolute right-0 top-full mt-2 w-48 bg-brand-panel border border-brand-border rounded-md shadow-xl z-20 py-1">
                   <div className="px-4 py-2 text-xs text-brand-muted">
-                    Signed in as <strong className="text-brand-text">Guest</strong>
+                    Signed in as <strong className="text-brand-text">{userName}</strong>
                   </div>
                   <div className="border-t border-brand-border my-1"></div>
                   <button 
@@ -212,7 +242,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
             <div className="p-4 border-b border-brand-border flex items-center justify-between">
                <div className="flex items-center gap-2">
                  <div className="w-8 h-8 flex items-center justify-center">
-                    <img src="/icon.png" alt="GitKarma Logo" className="w-full h-full object-contain" />
+                    <Image src="/icon.png" alt="GitKarma Logo" width={32} height={32} className="object-contain" />
                  </div>
                  <span className="font-bold text-white text-sm">GitKarma</span>
                </div>
@@ -279,7 +309,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                    {RECENT_REPOS.slice(0, 5).map((repo, i) => (
                       <div key={i} className="flex items-center gap-2 px-2 py-2 rounded-md text-sm font-medium text-brand-text hover:bg-[#21262d] cursor-pointer">
                         <div className="w-4 h-4 rounded-full bg-[#30363d] flex items-center justify-center shrink-0 overflow-hidden">
-                           <img src={`https://github.com/${repo.split('/')[0]}.png`} className="w-full h-full object-cover opacity-80" alt="" />
+                           <Image src={`https://github.com/${repo.split('/')[0]}.png`} width={16} height={16} className="object-cover opacity-80" alt="" />
                         </div>
                         <span className="truncate">{repo}</span>
                       </div>
@@ -291,10 +321,10 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
                
                {/* General Nav */}
                <nav className="space-y-2 text-sm font-medium text-brand-text">
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Pull requests</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Issues</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Codespaces</a>
-                  <a href="#" className="block px-2 py-1.5 hover:text-[#58a6ff]">Explore</a>
+                  <button onClick={() => showNotImplemented('Pull Requests')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Pull requests</button>
+                  <button onClick={() => showNotImplemented('Issues')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Issues</button>
+                  <button onClick={() => showNotImplemented('Codespaces')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Codespaces</button>
+                  <button onClick={() => showNotImplemented('Explore')} className="block w-full text-left px-2 py-1.5 hover:text-[#58a6ff]">Explore</button>
                </nav>
 
                <div className="mt-8 pt-4 border-t border-brand-border">

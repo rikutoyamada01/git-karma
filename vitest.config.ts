@@ -5,7 +5,19 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'node',
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './tests/setup.ts',
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
+  },
+  resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
