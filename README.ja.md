@@ -55,6 +55,7 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 
 ## ディレクトリ構成
 
+
 - **`src/`**: Next.js App Router アプリケーション (フロントエンド & API)。
 - **`prisma/`**: データベーススキーマとマイグレーション。
 - **`public/`**: 静的アセット。
@@ -67,17 +68,20 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 ## 開発 (ローカルでの実行)
 
 1. リポジトリをクローンし、依存関係をインストールします:
+
    ```bash
    git clone https://github.com/yamadarikuto/git-karma.git
    cd git-karma
    npm install
    ```
 
+
 2. 環境変数をセットアップします:
    ```bash
    cp .env.example .env
    # 設定をカスタマイズしたい場合は .env を編集してください。Dockerを使用する場合はデフォルトのままで動作します。
    ```
+
 
 3. データベースを起動します:
    ```bash
