@@ -5,10 +5,16 @@ To ensure stability in serverless environments (Vercel) and support migrations, 
 
 ## Connection Strategy
 
-*   **Runtime (`DATABASE_URL`)**: Uses the Transaction Pooler (e.g., Supabase port 6543) for high concurrency.
-*   **Migration (`DIRECT_URL`)**: Uses the Direct Connection (e.g., Supabase port 5432) for schema changes.
+*   **Runtime (`DATABASE_URL`)**:
+    *   **Prod**: Transaction Pooler (Supabase Cloud port 6543).
+    *   **Local**: Supabase Local (Docker port 54322).
+*   **Migration (`DIRECT_URL`)**:
+    *   **Prod**: Direct Connection (Supabase Cloud port 5432).
+    *   **Local**: Direct Connection (Supabase Local port 54322).
 
-This is handled automatically in `prisma.config.ts` and the `npm run migrate` script.
+This is handled by:
+- `npm run migrate` (for Prod/Remote)
+- `npm run migrate:local` (for Local)
 
 ## ER Diagram
 

@@ -4,7 +4,7 @@
   "description": "A mutual contribution platform for OSS. Barter your skills, earn Karma, and grow your projects.",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
+    "dev": "supabase start && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -13,7 +13,14 @@
     "postinstall": "prisma generate",
     "migrate": "cross-env PRISMA_MIGRATION=true prisma migrate dev",
     "prepare": "husky",
-    "migrate:prod": "cross-env PRISMA_MIGRATION=true prisma migrate deploy"
+    "migrate:prod": "cross-env PRISMA_MIGRATION=true prisma migrate deploy",
+    "supa:init": "supabase init",
+    "supa:start": "supabase start",
+    "supa:stop": "supabase stop",
+    "supa:status": "supabase status",
+    "supa:reset": "supabase db reset",
+    "db:reset": "prisma migrate reset",
+    "migrate:local": "cross-env PRISMA_MIGRATION=true dotenv -e .env.local -- prisma migrate dev"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -47,12 +54,14 @@
     "@vitejs/plugin-react": "^5.1.1",
     "baseline-browser-mapping": "^2.8.32",
     "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.5",
     "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.7",
     "prisma": "7.0.1",
+    "supabase": "^2.65.6",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.14"

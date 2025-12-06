@@ -41,7 +41,8 @@ Git Karma acts as a "Time Bank" for developers. It solves the problem of neglect
 ## Prerequisites
 
 - Node.js 18+
-- Docker & Docker Compose (for local database)
+- Docker (for Supabase Local)
+- Supabase CLI (Installed automatically via npm)
 
 ## Development (Run Locally)
 
@@ -55,18 +56,18 @@ Git Karma acts as a "Time Bank" for developers. It solves the problem of neglect
 
 2. Set up the environment:
    ```bash
-   cp .env.example .env
-   # Edit .env if you want to customize settings, otherwise defaults work with Docker
+   cp .env.example .env.local
+   # 1. Edit .env.local:
+   #    - Set AUTH_SECRET (auto-generated or use provided script)
+   #    - Set AUTH_GITHUB_ID & AUTH_GITHUB_SECRET (from your GitHub App)
    ```
 
 3. Start the database:
    ```bash
-   docker-compose up -d
-   ```
-
-4. Initialize the database:
-   ```bash
-   npm run migrate
+   # Note: 'npm run dev' automatically starts Supabase if not running
+   # But for the first time, or to apply schema:
+   npm run supa:start
+   npm run migrate:local
    ```
 
 5. Run the development server:

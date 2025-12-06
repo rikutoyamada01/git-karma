@@ -63,7 +63,8 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 ## 前提条件
 
 - Node.js 18以上
-- Docker & Docker Compose (ローカルデータベース用)
+- Docker (Supabase Local用)
+- Supabase CLI (npmで自動インストールされます)
 
 ## 開発 (ローカルでの実行)
 
@@ -78,19 +79,19 @@ Git Karmaは、開発者のための「時間銀行」として機能します�
 
 2. 環境変数をセットアップします:
    ```bash
-   cp .env.example .env
-   # 設定をカスタマイズしたい場合は .env を編集してください。Dockerを使用する場合はデフォルトのままで動作します。
+   cp .env.example .env.local
+   # 1. .env.local を編集:
+   #    - AUTH_SECRET を設定 (自動生成またはスクリプト使用)
+   #    - AUTH_GITHUB_ID と AUTH_GITHUB_SECRET を設定 (GitHub Appから取得)
    ```
 
 
 3. データベースを起動します:
    ```bash
-   docker-compose up -d
-   ```
-
-4. データベースを初期化します:
-   ```bash
-   npm run migrate
+   # 注: 'npm run dev' でSupabaseも自動起動します
+   # 初回やスキーマ適用が必要な場合:
+   npm run supa:start
+   npm run migrate:local
    ```
 
 5. 開発サーバーを起動します:
